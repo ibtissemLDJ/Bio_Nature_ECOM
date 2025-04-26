@@ -61,11 +61,8 @@ body {
     background-color: #003d80; /* Even darker on hover */
 }
 
-/* ... rest of your CSS remains the same ... */
-
-/* -------------------- NAVBAR SECTION -------------------- */
 .navbar {
-    background-color: #f2f2f2;
+    background-color: #e6edf4;
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
@@ -84,8 +81,20 @@ body {
     width: 120px;
 }
 
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.nav-right > * { /* Target direct children */
+    margin-left: 10px; /* Add left margin to all direct children */
+}
+
+.nav-right > *:first-child { /* Remove left margin from the first child */
+    margin-left: 0;
+}
+
 .nav-right i {
-    margin: 0 10px;
     font-size: 18px;
     color: #0c2d57;
 }
@@ -116,7 +125,6 @@ body {
 
 .profile-container {
     display: inline-block;
-    margin-left: 15px;
 }
 
 .profile-pic {

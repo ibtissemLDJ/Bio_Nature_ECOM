@@ -68,14 +68,15 @@ $intro_image_url = "images/serum_drop.jpg"; // REPLACE WITH YOUR ACTUAL IMAGE PA
         <a href="#">Contact</a>
         <a href="#">Categories</a>
     </div>
-
     <div class="nav-right">
         <i class="fas fa-bell"></i>
         <i class="fas fa-shopping-basket"></i>
 
         <?php if (isset($_SESSION['user_id'])): ?>
             <div class="profile-container">
-                <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile" class="profile-pic" title="<?php echo htmlspecialchars($username); ?>">
+                <a href="profile.php" title="Your Profile">
+                    <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile" class="profile-pic" title="<?php echo htmlspecialchars($username); ?>">
+                </a>
             </div>
         <?php else: ?>
             <button class="login-btn"><a href="login.php">Login</a></button>
@@ -100,7 +101,7 @@ $intro_image_url = "images/serum_drop.jpg"; // REPLACE WITH YOUR ACTUAL IMAGE PA
         <div class="filter-dropdown">
             <i class="fas fa-filter filter-icon" onclick="toggleDropdown()" title="Filtrer par catégorie"></i>
             <div id="categoryList" class="dropdown-content">
-                <a href="products.php">Toutes les catégories</a>
+                <a href="product.php">Toutes les catégories</a>
                 <?php
 
                 $categories_result = $conn->query("SELECT category_id, name FROM Categories");

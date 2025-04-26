@@ -8,12 +8,12 @@ body {
     margin: 0;
 }
 
-.signup-container {
+.profile-container {
     background-color: #fff;
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 350px;
+    width: 400px;
     text-align: center;
 }
 
@@ -22,65 +22,43 @@ h2 {
     margin-bottom: 20px;
 }
 
-.form-group {
-    margin-bottom: 20px;
+.profile-info {
     text-align: left;
+    margin-bottom: 30px;
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
+.profile-info p {
+    margin-bottom: 10px;
     color: #555;
-    font-weight: bold;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="email"] {
-    width: 100% ;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
     font-size: 16px;
 }
 
-.signup-button {
-    background-color: #0c2d57;
+.profile-info strong {
+    font-weight: bold;
+    color: #333;
+}
+
+.logout-button {
+    background-color: #d32f2f;
     color: white;
     padding: 12px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    width: 100%;
     transition: background-color 0.3s ease;
+    margin-bottom: 20px;
 }
 
-.signup-button:hover {
-    background-color: #081e3d;
+.logout-button:hover {
+    background-color: #b71c1c;
 }
 
-.error {
-    color: #d32f2f;
-    margin-bottom: 15px;
-}
-
-.success {
-    color: #4caf50;
-    margin-bottom: 15px;
-}
-
-.login-link {
-    margin-top: 20px;
-    color: #555;
-}
-
-.login-link a {
+.profile-container p a {
     color: #007bff;
     text-decoration: none;
 }
 
-.login-link a:hover {
+.profile-container p a:hover {
     text-decoration: underline;
 }
