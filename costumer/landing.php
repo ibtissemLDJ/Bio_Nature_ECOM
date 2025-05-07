@@ -91,7 +91,7 @@ function isProductInWishlist($item_id, $conn) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nescare | Organic Beauty Products</title>
-    <link rel="stylesheet" href="landing_style.css">
+    <link rel="stylesheet" href="landing.css">
     <link rel="stylesheet" href="products.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
@@ -111,11 +111,16 @@ function isProductInWishlist($item_id, $conn) {
               </ul>
          </nav>
          <div class="nav-right">
-              <a href="wishlist.php" title="Wishlist"><i class="fas fa-heart"></i></a>
+             <?php if (isset($_SESSION['user_id'])): ?>
+                 <a href="wishlist.php" title="Wishlist"><i class="fas fa-heart"></i></a>
+             <?php else: ?>
+                 <a href="login.php?redirect=landing.php" title="Login to view Wishlist"><i class="fas fa-heart"></i></a>
+             <?php endif; ?>
+
               <?php if (isset($_SESSION['user_id'])): ?>
                   <a href="basket.php" title="Cart"><i class="fas fa-shopping-basket"></i></a>
               <?php else: ?>
-                  <a href="login.php" title="Login to view Cart"><i class="fas fa-shopping-basket"></i></a>
+                  <a href="login.php?redirect=landing.php" title="Login to view Cart"><i class="fas fa-shopping-basket"></i></a>
               <?php endif; ?>
 
              <?php if (isset($_SESSION['user_id'])): ?>
@@ -127,30 +132,39 @@ function isProductInWishlist($item_id, $conn) {
                    <a href="login.php" class="login-btn">Login</a>
               <?php endif; ?>
            </div>
-           <?php
-           // Display session messages (success, warning, error)
-           if (isset($_SESSION['success_message'])): ?>
-               <div class="message success"><?php echo htmlspecialchars($_SESSION['success_message']); ?></div>
-               <?php unset($_SESSION['success_message']);
-           endif;
-           if (isset($_SESSION['warning_message'])): ?>
-               <div class="message warning"><?php echo htmlspecialchars($_SESSION['warning_message']); ?></div>
-               <?php unset($_SESSION['warning_message']);
-           endif;
-           if (isset($_SESSION['error_message'])): ?>
-               <div class="message error"><?php echo htmlspecialchars($_SESSION['error_message']); ?></div>
-               <?php unset($_SESSION['error_message']);
-           endif;
-           // Display database connection error if applicable (if set in db_connection.php or here)
-           // Note: Your db_connection.php uses die(), so error messages might not be reached.
-           if (isset($db_error)): ?>
-                <div class="message error"><?php echo htmlspecialchars($db_error); ?></div>
-           <?php endif; ?>
      </header>
 
      <?php
-     // You might want to display session messages here as well, inside the container below the header
-     ?>
+     // --- Session Messages Display (Upgraded UI) ---
+     // Place this where you want messages to appear, typically below the header
+     if (isset($_SESSION['success_message'])): ?>
+         <div class="message success">
+             <?php echo htmlspecialchars($_SESSION['success_message']); ?>
+             <span class="close-btn">×</span>
+         </div>
+         <?php unset($_SESSION['success_message']);
+     endif;
+     if (isset($_SESSION['warning_message'])): ?>
+         <div class="message warning">
+             <?php echo htmlspecialchars($_SESSION['warning_message']); ?>
+             <span class="close-btn">×</span>
+         </div>
+         <?php unset($_SESSION['warning_message']);
+     endif;
+     if (isset($_SESSION['error_message'])): ?>
+         <div class="message error">
+             <?php echo htmlspecialchars($_SESSION['error_message']); ?>
+             <span class="close-btn">×</span>
+         </div>
+         <?php unset($_SESSION['error_message']);
+     endif;
+     // Display database connection error if applicable
+     if (isset($db_error)): ?>
+          <div class="message error">
+              <?php echo htmlspecialchars($db_error); ?>
+              <span class="close-btn">×</span>
+          </div>
+      <?php endif; ?>
 
 
      <section class="hero">
@@ -208,21 +222,27 @@ function isProductInWishlist($item_id, $conn) {
                if (!empty($products)):
                     // Loop through the fetched products and display them
                     foreach ($products as $product):
+                         $item_id = $product['item_id'];
                          // Check if product is in wishlist (requires user login and valid connection)
-                         $isInWishlist = ($conn && isset($_SESSION['user_id'])) ? isProductInWishlist($product['item_id'], $conn) : false; // Pass $conn correctly
+                         $isInWishlist = ($conn && isset($_SESSION['user_id'])) ? isProductInWishlist($item_id, $conn) : false; // Pass $conn correctly
+
                          // Use product image_url, fallback to default
                          $image_path = !empty($product['image_url']) ? htmlspecialchars($product['image_url']) : 'images/default_product.png';
                          $image_alt = !empty($product['name']) ? htmlspecialchars($product['name']) : 'Product Image';
+
+                         // Determine the link destination based on login status for product actions
+                         $cart_link_href = isset($_SESSION['user_id']) ? "add_to_cart.php?item_id={$item_id}&quantity=1" : "login.php?redirect=landing.php";
+                         $wishlist_link_href = isset($_SESSION['user_id']) ? "add_to_wishlist.php?item_id={$item_id}" : "login.php?redirect=landing.php";
                ?>
-                    <div class="product" data-product-id="<?php echo htmlspecialchars($product['item_id']); ?>">
+                    <div class="product" data-product-id="<?php echo htmlspecialchars($item_id); ?>">
                          <div class="product-actions">
-                              <a href="add_to_wishlist.php?item_id=<?php echo htmlspecialchars($product['item_id']); ?>"
+                              <a href="<?php echo htmlspecialchars($wishlist_link_href); ?>"
                                   class="wishlist-icon <?php echo $isInWishlist ? 'active' : ''; ?>"
-                                  title="<?php echo $isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'; ?>">
+                                  title="<?php echo isset($_SESSION['user_id']) ? ($isInWishlist ? 'Remove from wishlist' : 'Add to wishlist') : 'Login to add to wishlist'; ?>">
                                    <i class="fas fa-heart"></i>
                               </a>
-                              <a href="add_to_cart.php?item_id=<?php echo htmlspecialchars($product['item_id']); ?>&quantity=1"
-                                  class="cart-icon" title="Add to cart">
+                              <a href="<?php echo htmlspecialchars($cart_link_href); ?>"
+                                  class="cart-icon" title="<?php echo isset($_SESSION['user_id']) ? 'Add to cart' : 'Login to add to cart'; ?>">
                                    <i class="fas fa-shopping-basket"></i>
                               </a>
                          </div>
@@ -358,6 +378,7 @@ function isProductInWishlist($item_id, $conn) {
                productCards.forEach(card => {
                     card.addEventListener('click', function(event) {
                          // Prevent navigating if a link/button *inside* the card was clicked
+                         // Added check for parentElement.tagName === 'A' for icons
                          if (event.target.closest('.product-actions') || event.target.tagName === 'A' || event.target.tagName === 'BUTTON' || event.target.parentElement.tagName === 'A') {
                               return;
                          }
@@ -386,8 +407,35 @@ function isProductInWishlist($item_id, $conn) {
                    setInterval(cycleImages, 7000); // Change image every 7 seconds
                }
 
-          });
+              // --- JavaScript for Message Dismissal ---
+              const messages = document.querySelectorAll('.message');
 
+              messages.forEach(message => {
+                  const closeBtn = message.querySelector('.close-btn');
+
+                  // Close button click handler
+                  if (closeBtn) {
+                      closeBtn.addEventListener('click', function() {
+                          message.style.opacity = '0'; // Start fade out
+                          setTimeout(function() {
+                              message.remove(); // Remove element after fade out
+                          }, 500); // Match this duration to the CSS transition time
+                      });
+                  }
+
+                  // Optional: Auto-dismiss after a few seconds (e.g., 5000ms = 5 seconds)
+                  // You might only want this for success/warning messages, not errors
+                   if (message.classList.contains('success') || message.classList.contains('warning')) {
+                       setTimeout(function() {
+                           message.style.opacity = '0'; // Start fade out
+                           setTimeout(function() {
+                               message.remove(); // Remove element after fade out
+                           }, 500); // Match this duration to the CSS transition time
+                       }, 5000); // Time before auto-dismiss starts (5 seconds)
+                   }
+              });
+
+          }); // End DOMContentLoaded
      </script>
 
 </body>
