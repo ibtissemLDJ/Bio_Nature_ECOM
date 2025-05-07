@@ -1,0 +1,603 @@
+/* wishlist.css - Consistent Header/Footer with Products.css */
+
+:root {
+    --primary: #0c2d57;
+    --secondary: #e6edf4;
+    --accent: #FF85A2; /* Use this for highlights like active wishlist */
+    --dark: #3A3A3A;
+    --light: #F8F9FA;
+    --white: #FFFFFF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--light);
+    color: var(--dark);
+    line-height: 1.4; /* Adopted from products.css */
+    font-size: 14px; /* Adopted from products.css */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Make container grow to push footer down (if you wrap content in .container) */
+/* Note: Your current PHP doesn't use a main .container div wrapping content */
+/* If you add one, uncomment this: */
+/*
+.container {
+     flex-grow: 1;
+}
+*/
+
+/* --- Header (Adopted from products.css) --- */
+header {
+    background-color: var(--white);
+    padding: 10px 4%; /* Adopted from products.css */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.04); /* Adopted from products.css */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .logo {
+    height: 28px;
+    display: block; /* Prevents potential spacing issues */
+  }
+  
+  nav {
+      margin: 0 auto; /* Center nav */
+  }
+  
+  nav ul {
+    display: flex;
+    list-style: none;
+    gap: 20px; /* Increased spacing */
+  }
+  
+  nav ul li a {
+    text-decoration: none;
+    color: var(--dark);
+    font-weight: 400;
+    font-size: 13px;
+    padding: 5px 0; /* Add padding for hover area */
+    position: relative; /* For potential underline effect */
+    transition: color 0.2s;
+  }
+  
+  nav ul li a:hover,
+  nav ul li a.active {
+    color: var(--primary);
+    font-weight: 500;
+  }
+  
+  /* Optional: Underline effect on hover/active */
+  /*
+  nav ul li a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 50%;
+      background-color: var(--primary);
+      transition: width 0.3s ease, left 0.3s ease;
+  }
+  nav ul li a:hover::after,
+  nav ul li a.active::after {
+      width: 100%;
+      left: 0;
+  }
+  */
+  
+  /* --- Header Nav Right Styling --- */
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  
+  /* Style ONLY the ICON links (wishlist, basket) within nav-right */
+  .nav-right a:not(.login-btn):not(.profile-link) { /* Exclude login button and profile link */
+      color: var(--primary);
+      font-size: 17px;
+      transition: color 0.2s ease, transform 0.2s ease;
+      text-decoration: none;
+      display: inline-block; /* Allows transform */
+  }
+  
+  /* Apply hover ONLY to icon links */
+  .nav-right a:not(.login-btn):not(.profile-link):hover {
+      color: var(--accent);
+      transform: scale(1.1); /* Slight scale on hover */
+  }
+  
+  /* Style for the profile link container */
+  .profile-container {
+      line-height: 0;
+  }
+  .profile-container a { /* Style specifically for the profile link */
+      display: inline-block; /* Or block if needed */
+      text-decoration: none;
+      /* No color/font-size needed here as it contains only the image */
+  }
+  
+  .profile-pic {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--primary);
+    display: block;
+    transition: transform 0.3s ease, border-color 0.3s ease; /* Added border-color */
+  }
+  /* Profile pic specific hover */
+  .profile-container a:hover .profile-pic {
+      transform: rotate(10deg) scale(1.1);
+      border-color: var(--accent);
+  }
+  
+  
+  /* --- Login Button Styling (Should now work correctly) --- */
+  .login-btn {
+    padding: 6px 15px;
+    background-color: var(--primary);
+    color: var(--white); /* THIS IS THE FIX - Text is explicitly white */
+    border: none;
+    border-radius: 15px;
+    font-size: 13px; /* Specific font size for the button */
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
+    text-decoration: none;
+    display: inline-block; /* Ensure proper display */
+    line-height: normal; /* Ensure default line height */
+    text-align: center; /* Ensure text is centered */
+  }
+  
+  .login-btn:hover {
+    background-color: var(--accent);
+    color: var(--white); /* Keep text white on hover */
+    transform: translateY(-2px); /* Button lift effect */
+  }
+  
+
+/* Wishlist Container */
+.wishlist-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    flex-grow: 1; /* Allow wishlist area to grow if no .container wrapper */
+}
+
+.wishlist-container h1 {
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+}
+
+.empty-wishlist {
+    text-align: center;
+    padding: 50px 20px;
+    border: 2px dashed var(--secondary);
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.empty-icon {
+    font-size: 60px;
+    color: var(--secondary);
+    margin-bottom: 20px;
+}
+
+.empty-wishlist p {
+    font-size: 1.2rem;
+    color: var(--dark);
+    margin-bottom: 30px;
+}
+
+/* Reusing the general button style */
+.btn {
+    display: inline-block;
+    padding: 14px 32px;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    background-color: var(--accent);
+}
+
+
+.wishlist-content {
+    padding: 0 10px;
+}
+
+
+.wishlist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--secondary);
+}
+
+.item-details {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+}
+
+.item-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--secondary);
+    flex-shrink: 0;
+}
+
+.item-info {
+   flex: 1;
+}
+
+.item-info h3 {
+    margin: 0 0 5px;
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+.item-info h3 a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s;
+}
+
+.item-info h3 a:hover {
+    color: var(--accent);
+}
+
+.item-price {
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 1rem;
+    margin-top: 5px;
+}
+
+.item-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Optional: Style for the "Add to Cart" button (adjust as needed) */
+.wishlist-item .add-to-cart-btn {
+    background-color: var(--accent);
+    color: var(--white);
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.wishlist-item .add-to-cart-btn:hover {
+    background-color: #e07b98;
+}
+
+
+.remove-btn {
+    color: #dc3545;
+    font-size: 1.2rem;
+    transition: color 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.remove-btn:hover {
+    color: #c82333;
+}
+
+
+/* --- Footer (Adopted from products.css) --- */
+footer {
+    background-color: var(--primary);
+    color: var(--light); /* Adopted from products.css */
+    padding: 50px 4% 25px; /* Adopted from products.css */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Adopted from products.css */
+    gap: 40px; /* Adopted from products.css */
+    margin-top: 50px; /* Adopted from products.css */
+    width: 100%;
+}
+
+footer div h3 {
+    font-size: 1.1rem; /* Adopted from products.css */
+    margin-bottom: 20px; /* Adopted from products.css */
+    color: var(--white); /* Adopted from products.css */
+    font-weight: 600; /* Adopted from products.css */
+    position: relative;
+    padding-bottom: 5px;
+}
+
+footer div ul {
+    list-style: none;
+    padding: 0;
+}
+
+footer div ul li {
+    margin-bottom: 12px; /* Adopted from products.css */
+}
+
+footer div ul li a {
+    text-decoration: none;
+    color: var(--secondary); /* Adopted from products.css */
+    font-size: 0.9rem; /* Adopted from products.css */
+    transition: color 0.2s, padding-left 0.2s; /* Adopted from products.css */
+    display: inline-block; /* Ensured inline-block for padding-left */
+}
+
+footer div ul li a:hover {
+    color: var(--accent);
+    padding-left: 5px; /* Adopted from products.css */
+}
+
+footer div ul li a i {
+    margin-right: 10px; /* Adopted from products.css */
+    font-size: 1rem; /* Adopted from products.css */
+    width: 15px; /* Adopted from products.css */
+    text-align: center;
+}
+
+.copyright {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 30px; /* Adopted from products.css */
+    padding-top: 25px; /* Adopted from products.css */
+    border-top: 1px solid rgba(230, 237, 244, 0.3); /* Adopted from products.css */
+    font-size: 0.85rem; /* Adopted from products.css */
+    color: var(--secondary); /* Adopted from products.css */
+}
+
+
+/* --- Responsive Adjustments --- */
+
+/* Using products.css media query breakpoints and header/footer rules */
+
+@media (max-width: 992px) {
+     nav {
+         margin: 0;
+     }
+    .wishlist-container {
+        padding: 15px;
+        margin: 20px auto;
+    }
+
+    .wishlist-container h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+    .wishlist-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 15px 0; /* Adjust padding */
+    }
+
+    .item-details {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 15px;
+        width: 100%;
+    }
+
+    .item-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .item-info {
+        flex: 1;
+        margin-top: 0;
+    }
+
+   .item-info h3 {
+        font-size: 1rem;
+    }
+
+
+    .item-actions {
+        margin-top: 0;
+        justify-content: flex-start;
+        width: 100%;
+        gap: 10px; /* Adjust gap */
+        flex-direction: row; /* Keep actions in a row if enough space */
+    }
+
+     .remove-btn {
+        font-size: 1.1rem;
+    }
+
+    footer {
+       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adopted from products.css */
+       gap: 30px; /* Adopted from products.css */
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        padding: 10px 3%; /* Adopted from products.css */
+        flex-wrap: wrap;
+    }
+     nav ul {
+         display: none; /* Adopted from products.css */
+     }
+     .nav-right {
+         order: 3; /* Adopted from products.css */
+         flex-basis: 100%; /* Adopted from products.css */
+         justify-content: flex-end; /* Adopted from products.css */
+         margin-top: 5px; /* Adopted from products.css */
+     }
+
+    .wishlist-container {
+        padding: 10px;
+        margin: 15px auto;
+    }
+    .wishlist-container h1 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+
+    .wishlist-item {
+        padding: 15px 0;
+    }
+
+    .item-details {
+        gap: 10px;
+    }
+
+    .item-info h3 {
+       font-size: 0.95rem;
+    }
+
+   .item-image {
+        width: 60px;
+        height: 60px;
+    }
+
+    .item-actions {
+        flex-direction: column; /* Stack actions vertically */
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .wishlist-item .add-to-cart-btn {
+        width: auto;
+    }
+
+
+    footer {
+        padding: 40px 4% 20px; /* Adopted from products.css (roughly) */
+        gap: 25px; /* Adopted from products.css (roughly) */
+        grid-template-columns: 1fr; /* Adopted from original wishlist.css for this breakpoint */
+        text-align: center; /* Adopted from original wishlist.css */
+    }
+    footer ul li a {
+        justify-content: center; /* Adopted from original wishlist.css */
+    }
+}
+
+@media (max-width: 480px) {
+    .wishlist-container h1 {
+        font-size: 1.5rem;
+    }
+
+    .wishlist-item {
+        flex-direction: row; /* Changed to row like product card on small screen */
+        align-items: center;
+        justify-content: space-between; /* Re-align items */
+        padding: 10px; /* Less padding */
+        gap: 10px; /* Gap between image/info and actions */
+    }
+    .item-details {
+        flex-direction: row; /* Keep details in a row */
+        align-items: center;
+        gap: 8px;
+        width: auto; /* Auto width to not push actions */
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    .item-info {
+         margin-top: 0;
+         flex: 0; /* Prevent info from growing and pushing actions */
+         min-width: 100px; /* Give info a min width */
+    }
+    .item-info h3 {
+        font-size: 0.9rem;
+        margin-bottom: 0; /* No margin below title */
+        white-space: nowrap; /* Prevent wrapping */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 120px; /* Limit title width if needed */
+    }
+
+    .item-price {
+        font-size: 0.9rem; /* Smaller price */
+        margin-top: 0; /* No margin */
+        text-align: left;
+    }
+
+
+   .item-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 6px; /* Slightly less rounded */
+        border: none; /* Remove border */
+    }
+
+    .item-actions {
+        margin-top: 0;
+        width: auto; /* Auto width */
+        flex-direction: column; /* Stack actions */
+        align-items: flex-end; /* Align actions to the right */
+        gap: 5px;
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    .wishlist-item .add-to-cart-btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+
+    .remove-btn {
+        font-size: 1rem;
+    }
+
+     footer {
+         grid-template-columns: 1fr 1fr; /* Adopted from products.css */
+         gap: 20px; /* Adjust gap */
+     }
+     footer ul li a {
+        justify-content: flex-start; /* Align links left in 2-column layout */
+     }
+      .copyright {
+          margin-top: 20px;
+          padding-top: 15px;
+      }
+}

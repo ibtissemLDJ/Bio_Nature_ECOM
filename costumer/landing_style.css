@@ -1,0 +1,730 @@
+:root {
+  --primary: #0c2d57; /* Dark Blue */
+  --secondary: #e6edf4; /* Light Grey Blue */
+  --accent: #FF85A2; /* Pink */
+  --dark: #3A3A3A; /* Very Dark Grey */
+  --light: #F8F9FA; /* Very Light Grey */
+  --white: #FFFFFF; /* White */
+
+  /* Added common status colors using variables or hex */
+  --status-pending: #ffc107; /* Warning Yellow */
+  --status-processing: #17a2b8; /* Info Cyan */
+  --status-shipped: #007bff; /* Primary Blue */
+  --status-delivered: #28a745; /* Success Green */
+  --status-cancelled: #dc3545; /* Danger Red */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* Consider a font stack for better compatibility */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--light);
+  color: var(--dark);
+  line-height: 1.6; /* Increased line height for readability */
+  font-size: 15px; /* Slightly increased base font size */
+  /* Important: If your header is fixed/sticky, you need padding-top on body
+     or main content container equal to the header height to prevent content
+     from being hidden underneath. This is typically done in a base layout CSS.
+     Example: padding-top: 60px; */
+}
+
+a {
+  text-decoration: none;
+  color: inherit; /* Inherit color by default */
+}
+
+/* Basic Message Styling */
+.message {
+  padding: 10px 4%; /* Match page padding */
+  margin: 0 auto 15px; /* Center and add bottom margin */
+  border-radius: 5px;
+  opacity: 0.95;
+  font-size: 0.95em;
+  max-width: 1200px; /* Match container width if applicable */
+  width: 100%;
+  box-sizing: border-box; /* Include padding in width */
+}
+
+.message.success {
+  background-color: var(--status-delivered); /* Using success color variable */
+  color: var(--white); /* White text on success */
+  border: 1px solid darken(var(--status-delivered), 10%); /* Darken border (Sass concept, use a fixed value or JS if needed) */
+}
+.message.warning {
+  background-color: var(--status-pending); /* Using warning color variable */
+  color: var(--dark); /* Dark text on warning */
+  border: 1px solid darken(var(--status-pending), 10%);
+}
+.message.error {
+  background-color: var(--status-cancelled); /* Using danger color variable */
+  color: var(--white); /* White text on error */
+  border: 1px solid darken(var(--status-cancelled), 10%);
+}
+
+
+/* Header */
+header {
+  background-color: var(--white);
+  padding: 12px 4%; /* Slightly more vertical padding */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Softer shadow */
+  position: sticky; /* Using sticky position */
+  top: 0;
+  z-index: 100;
+  width: 100%; /* Ensure header spans full width */
+}
+
+
+
+nav ul {
+  display: flex;
+  list-style: none;
+  gap: 20px; /* More space between nav items */
+  margin: 0; /* Ensure no default margin */
+  padding: 0; /* Ensure no default padding */
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: var(--dark);
+  font-weight: 500; /* Slightly bolder nav links */
+  font-size: 14px; /* Match body font size */
+  transition: color 0.2s ease;
+}
+
+nav ul li a:hover,
+nav ul li a.active { /* Style for active link */
+  color: var(--primary);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* More space between right nav items */
+}
+
+/* Style for the icon links specifically */
+.nav-right a {
+  color: var(--primary); /* Primary color for icons */
+  font-size: 18px; /* Slightly larger icons */
+  transition: color 0.2s ease;
+}
+
+.nav-right a:hover {
+  color: var(--accent); /* Accent color on hover */
+}
+
+/* Login button styling */
+.nav-right .login-btn {
+  background-color: var(--primary);
+  color: var(--white);
+  padding: 6px 15px; /* Adjust padding */
+  border-radius: 20px; /* Pill shape */
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  display: inline-block; /* Ensure padding works */
+}
+
+.nav-right .login-btn:hover {
+  background-color: var(--accent);
+}
+
+
+.profile-container {
+  /* Basic styling for the profile picture wrapper */
+  display: flex;
+  align-items: center;
+}
+
+.profile-pic {
+  width: 32px; /* Slightly larger profile pic */
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary); /* Primary border */
+  display: block; /* Remove any extra space below image */
+}
+
+/* Hero */
+.hero {
+  height: 70vh; /* Increased height */
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), /* Darker overlay */
+    url('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1350&q=80'); /* Example background image */
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--white);
+  text-align: center;
+  padding: 0 20px; /* More padding */
+  position: relative; /* Needed for any absolute positioning inside hero */
+  z-index: 1; /* Ensure content is above background */
+}
+
+.hero h1 {
+  font-size: 2.5rem; /* Larger heading */
+  margin-bottom: 15px;
+  font-weight: 700;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+.hero p {
+  font-size: 1.1rem; /* Larger paragraph */
+  max-width: 600px; /* Wider paragraph */
+  margin-bottom: 30px;
+  font-weight: 300;
+}
+
+/* Style the "Shop Now" button specifically if different from generic .btn */
+.hero .btn {
+  padding: 10px 25px; /* Larger button */
+  background-color: var(--accent); /* Accent color for hero button */
+  color: var(--dark); /* Dark text on accent button */
+  border-radius: 25px; /* More rounded */
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.hero .btn:hover {
+  background-color: darken(var(--accent), 10%); /* Darken on hover */
+  transform: translateY(-2px); /* Slight lift */
+}
+
+
+/* Features */
+.features {
+  padding: 60px 4%; /* More padding */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust min width */
+  gap: 30px; /* More space between cards */
+  background-color: var(--white);
+}
+
+.feature-card {
+  background-color: var(--light);
+  padding: 30px; /* More padding */
+  border-radius: 10px; /* More rounded corners */
+  text-align: center;
+  border: 1px solid rgba(0,0,0,0.06); /* Slightly darker border */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+   transform: translateY(-5px); /* Lift effect on hover */
+   box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+
+.feature-card i {
+  font-size: 36px; /* Larger icons */
+  margin-bottom: 15px;
+  color: var(--accent); /* Accent color for feature icons */
+}
+
+.feature-card h3 {
+  font-size: 18px; /* Larger heading */
+  margin-bottom: 10px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.feature-card p {
+  font-size: 14px; /* Match body font size */
+  color: var(--dark);
+}
+
+/* Products Section */
+.products-section {
+  padding: 60px 4%; /* More padding */
+  background-color: var(--light);
+}
+
+.title-filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px; /* More space below */
+  gap: 15px; /* Adjust gap */
+  flex-wrap: wrap;
+}
+
+.products-title {
+  font-size: 1.8rem; /* Larger title */
+  color: var(--primary);
+  margin: 0; /* Remove default margin */
+}
+
+/* Filter Dropdown */
+.filter-dropdown {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.filter-icon {
+  font-size: 20px; /* Larger icon */
+  background-color: var(--white);
+  padding: 8px 12px; /* More padding */
+  border-radius: 8px; /* More rounded */
+  cursor: pointer;
+  color: var(--primary); /* Primary color for icon */
+  border: 1px solid rgba(0,0,0,0.1);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-icon:hover {
+  background-color: var(--secondary);
+  border-color: var(--primary);
+}
+
+
+.dropdown-content {
+  display: none; /* Hidden by default */
+  position: absolute;
+  background-color: var(--white);
+  min-width: 180px; /* Wider dropdown */
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.15);
+  z-index: 1;
+  right: 0; /* Align dropdown to the right */
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.dropdown-content.show {
+  display: block; /* Shown when .show class is added */
+}
+
+.dropdown-content a {
+  color: var(--dark); /* Dark text */
+  padding: 12px 18px; /* More padding */
+  text-decoration: none;
+  display: block;
+  font-size: 0.95em; /* Slightly larger text */
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-content a:hover {
+  background-color: var(--secondary);
+  color: var(--primary); /* Primary color on hover */
+}
+
+.dropdown-content a[style*="font-weight:bold"],
+.dropdown-content a.active-cat { /* Style for active category link */
+  font-weight: bold !important; /* Use !important if inline style is stubborn */
+  color: var(--primary) !important; /* Primary color for active category */
+}
+
+
+.dropdown-content span { /* Style for "No categories found" */
+  padding: 12px 18px; /* Match link padding */
+  color: #888;
+  font-size: 0.9em;
+  display: block;
+}
+
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Adjust min width */
+  gap: 30px; /* More space between products */
+}
+
+.product {
+  border-radius: 10px; /* More rounded corners */
+  overflow: hidden;
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.08); /* Slightly darker border */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08); /* Softer shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.product:hover {
+  transform: translateY(-8px); /* More pronounced lift effect */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+
+/* Product Actions (Wishlist/Cart icons) */
+.product-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* More space between icons */
+  z-index: 2;
+}
+
+/* Style for the anchor tags wrapping the icons */
+.product-actions a {
+  display: flex; /* Use flex for centering icon */
+  justify-content: center;
+  align-items: center;
+  width: 36px; /* Larger clickable area */
+  height: 36px;
+  background-color: rgba(255, 255, 255, 0.85); /* Slightly less transparent white */
+  border-radius: 50%;
+  color: var(--primary); /* Primary color for icons */
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.product-actions a:hover {
+  background-color: var(--secondary);
+  transform: scale(1.1); /* Slight scale effect */
+}
+
+/* Style for the icons inside the anchors */
+.product-actions a i {
+  font-size: 18px; /* Larger icons */
+   color: inherit; /* Inherit color from parent 'a' tag */
+}
+
+/* Active state for Wishlist icon */
+.wishlist-icon.active {
+  color: var(--accent); /* Accent color when active */
+  background-color: var(--secondary); /* Secondary background when active */
+}
+.wishlist-icon.active:hover {
+  background-color: darken(var(--secondary), 5%);
+}
+
+
+.product img {
+  height: 200px; /* Consistent height */
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px 8px 0 0; /* Top corners rounded */
+  margin-bottom: 0; /* No margin below image, padding is in product-info */
+}
+
+.product-info {
+  padding: 15px; /* Slightly more padding */
+}
+
+.product-info h3 {
+  font-size: 1.1em; /* Slightly larger heading */
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--primary);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.product-info p {
+  font-size: 0.9em; /* Match body font size */
+  color: var(--dark);
+  margin-bottom: 10px;
+  height: 3.6em; /* Use em for height based on font-size */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5; /* Ensure consistent description height */
+}
+
+.price {
+  font-size: 1.2em; /* Larger price */
+  font-weight: 700; /* Bolder price */
+  color: var(--accent); /* Accent color for price */
+  margin-top: 10px;
+}
+
+/* Video Section */
+.video-section {
+  padding: 60px 4%; /* More padding */
+  background: var(--secondary);
+  text-align: center;
+}
+
+.video-section h2 {
+  font-size: 1.8rem;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.video-section p {
+  font-size: 1.1rem;
+  color: var(--dark);
+  margin-bottom: 30px;
+}
+
+
+.video-container {
+  max-width: 800px;
+  margin: 20px auto 0;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio (9/16 * 100) */
+  position: relative;
+  height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.video-container iframe {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: none;
+  top: 0;
+  left: 0;
+}
+
+/* Testimonials */
+.testimonials {
+  padding: 60px 4%; /* More padding */
+  text-align: center;
+  background-color: var(--white);
+}
+
+.testimonials h2 {
+  font-size: 1.8rem;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.testimonials p {
+  font-size: 1.1rem;
+  color: var(--dark);
+  margin-bottom: 30px;
+}
+
+
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjust min width */
+  gap: 30px; /* More space */
+  margin-top: 30px;
+}
+
+.testimonial-card {
+  background-color: var(--light);
+  padding: 30px; /* More padding */
+  border-radius: 10px; /* More rounded */
+  font-size: 14px; /* Match body font size */
+  color: var(--dark);
+  border: 1px solid rgba(0,0,0,0.06);
+  display: flex; /* Use flex for internal layout */
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.testimonial-card img {
+  width: 70px; /* Larger avatar */
+  height: 70px;
+  margin-bottom: 15px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent); /* Accent border */
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.testimonial-card p {
+  font-style: italic;
+  margin-bottom: 15px;
+  font-size: 1em; /* Relative to parent font size */
+  flex-grow: 1; /* Allow paragraph to grow */
+}
+
+.testimonial-card h4 {
+  font-size: 1em;
+  color: var(--primary);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.testimonial-card .stars {
+  color: gold; /* Standard gold for stars */
+  font-size: 1em;
+}
+
+/* Footer */
+footer {
+  background-color: var(--dark); /* Dark background */
+  color: var(--light); /* Light text */
+  padding: 40px 4%;
+  margin-top: 0; /* No top margin if products section has bottom padding */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 30px; /* More space between columns */
+  font-size: 0.9em;
+}
+
+footer h3 {
+  color: var(--accent); /* Accent color for headings */
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+footer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+footer li {
+  margin-bottom: 10px; /* More space between list items */
+}
+
+footer a {
+  color: var(--secondary); /* Secondary color for links */
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-weight: 400;
+}
+
+footer a:hover {
+  color: var(--white); /* White on hover */
+}
+
+footer a i {
+  margin-right: 8px;
+  font-size: 1em;
+}
+
+.copyright {
+  width: 100%;
+  text-align: center;
+  margin-top: 30px; /* More space above copyright */
+  color: var(--secondary); /* Secondary color for copyright */
+  font-size: 0.8em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  body {
+      font-size: 14px;
+  }
+  header {
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px 4%;
+  }
+  header nav ul {
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+  }
+  .nav-right {
+      gap: 10px;
+  }
+  .hero h1 {
+      font-size: 2rem;
+  }
+  .hero p {
+      font-size: 1em;
+  }
+  .features, .products-section, .video-section, .testimonials {
+      padding: 40px 4%;
+  }
+   .feature-card, .testimonial-card {
+       padding: 20px;
+   }
+  .product-grid, .testimonial-grid {
+      gap: 20px;
+  }
+   .title-filter-bar {
+       flex-direction: column;
+       align-items: flex-start;
+       gap: 10px;
+   }
+    .filter-dropdown {
+        width: 100%;
+        text-align: right;
+    }
+    .dropdown-content {
+        right: 0;
+        left: auto;
+    }
+  footer {
+      justify-content: flex-start;
+      gap: 20px;
+  }
+  footer div {
+      flex-basis: 45%; /* Two columns on tablet */
+  }
+}
+
+@media (max-width: 480px) {
+   body {
+       font-size: 13px;
+   }
+   header {
+       padding: 8px 4%;
+   }
+    header nav ul {
+       gap: 8px;
+   }
+   .hero h1 {
+       font-size: 1.5rem;
+   }
+    .hero p {
+       font-size: 0.9em;
+    }
+   .hero .btn {
+       padding: 8px 20px;
+       font-size: 13px;
+   }
+  .features, .products-section, .video-section, .testimonials {
+      padding: 30px 4%;
+  }
+  .feature-card i {
+      font-size: 28px;
+  }
+  .feature-card h3 {
+      font-size: 1em;
+  }
+  .product-grid, .testimonial-grid {
+      gap: 15px;
+  }
+  .product img {
+      height: 180px; /* Adjusted height */
+  }
+  .product-info {
+      padding: 10px;
+  }
+  .product-info h3 {
+      font-size: 1em;
+  }
+  .product-info p {
+      font-size: 0.8em;
+      height: 3.2em; /* Adjust height based on new font size */
+  }
+   .price {
+       font-size: 1em;
+   }
+  .video-section h2, .testimonials h2 {
+      font-size: 1.5rem;
+  }
+  .video-section p, .testimonials p {
+      font-size: 1em;
+  }
+   .testimonial-card img {
+       width: 50px;
+       height: 50px;
+   }
+   footer div {
+       flex-basis: 100%; /* Stack columns on mobile */
+       text-align: center;
+   }
+   footer ul {
+       align-items: center; /* Center list items */
+   }
+}

@@ -1,0 +1,136 @@
+body {
+        font-family: 'Segoe UI', sans-serif; /* Using Segoe UI as in your original CSS */
+        background-color: #f4f4f4; /* Light grey background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px; /* Add some padding in case the container is wider than viewport */
+        box-sizing: border-box; /* Include padding in element's total width and height */
+    }
+    
+    .login-container {
+        background-color: #fff; /* White background for the form container */
+        padding: 30px; /* Increased padding slightly for more space around content */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Softer and slightly larger shadow */
+        width: 100%; /* Make container responsive */
+        max-width: 380px; /* Set a max-width to prevent it from being too wide on large screens */
+        text-align: center;
+        /* Ensure the container is centered when max-width is applied */
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    h2 {
+        color: #333; /* Dark grey color for heading */
+        margin-bottom: 25px; /* Increased space below heading */
+        font-size: 24px; /* Adjust font size if needed */
+    }
+    
+    .form-group {
+        margin-bottom: 20px; /* Space between form groups */
+        text-align: left; /* Align labels and inputs to the left */
+    }
+    
+    label {
+        display: block; /* Make labels block elements */
+        margin-bottom: 8px; /* Space between label and input */
+        color: #555; /* Medium grey color for labels */
+        font-weight: bold; /* Bold font for labels */
+        font-size: 15px; /* Adjust label font size */
+    }
+    
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+        width: 100% ; /* Make inputs fill the container width */
+        padding: 12px 10px; /* Increased padding inside inputs */
+        border: 1px solid #ccc; /* Slightly lighter border color */
+        border-radius: 4px; /* Rounded corners for inputs */
+        box-sizing: border-box; /* Include padding and border in the element's total width */
+        font-size: 16px; /* Standard font size for inputs */
+    }
+    
+    /* Style for the login button */
+    .login-button {
+        background-color: #0c2d57; /* Dark blue background */
+        color: white; /* White text */
+        padding: 12px 20px; /* Padding inside the button */
+        border: none; /* No border */
+        border-radius: 4px; /* Rounded corners */
+        cursor: pointer; /* Indicate it's clickable */
+        font-size: 16px; /* Font size */
+        width: 100%; /* Make button fill the container width */
+        transition: background-color 0.3s ease; /* Smooth transition on hover */
+        margin-top: 10px; /* Space above the button */
+    }
+    
+    .login-button:hover {
+        background-color: #081e3d; /* Darker blue on hover */
+    }
+    
+    /* Style for error messages */
+    .error {
+        color: #d32f2f; /* Red color for errors */
+        margin-bottom: 15px; /* Space below error message */
+        font-size: 14px; /* Adjust font size */
+    }
+    
+    /* Style for success messages (if you add them later) */
+    .success {
+        color: #4caf50; /* Green color for success */
+        margin-bottom: 15px; /* Space below success message */
+        font-size: 14px; /* Adjust font size */
+    }
+    
+    /* Styles for the links below the form */
+    .forgot-password,
+    .signup-link {
+        margin-top: 15px; /* Space above the links */
+        color: #555; /* Medium grey color */
+        font-size: 14px; /* Adjust font size */
+    }
+    
+    .forgot-password a,
+    .signup-link a {
+        color: #007bff; /* Blue link color */
+        text-decoration: none; /* No underline by default */
+    }
+    
+    .forgot-password a:hover,
+    .signup-link a:hover {
+        text-decoration: underline; /* Underline on hover */
+    }
+    
+    /* Note: The .signup-button and .login-link styles from your original CSS are kept
+       in case you use them elsewhere, but they are not directly used in the admin login form. */
+    .signup-button {
+        /* Styles for a signup button if needed */
+        background-color: #2ecc71; /* Example green color */
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+    .signup-button:hover {
+        background-color: #27ae60;
+    }
+    .login-link {
+        /* Styles for a login link if needed */
+        margin-top: 20px;
+        color: #555;
+    }
+    .login-link a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+    

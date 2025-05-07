@@ -1,0 +1,202 @@
+/* checkout.css */
+
+/* --- Main Content Container --- */
+/* Styles for the main wrapper div around the checkout content */
+.checkout-container {
+    max-width: 800px; /* Or match the max width of your other page containers */
+    margin: 20px auto; /* Center the container with space top/bottom */
+    padding: 20px;
+    background-color: #fff; /* White background for the content area */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Style for the main heading on the checkout page */
+.checkout-container h1 {
+    text-align: center;
+    color: var(--secondary-dark); /* Use a color from your theme */
+    margin-bottom: 20px;
+}
+
+/* --- Message styles (success, warning, error) --- */
+/* If you already have these styles in a global CSS, you can remove this block */
+.message {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    /* Add transitions or other effects if desired */
+}
+
+.message.success {
+    background-color: #d4edda; /* Light green */
+    color: #155724; /* Dark green text */
+    border: 1px solid #c3e6cb; /* Green border */
+}
+
+.message.warning {
+    background-color: #fff3cd; /* Light yellow */
+    color: #856404; /* Dark yellow text */
+    border: 1px solid #ffeeba; /* Yellow border */
+}
+
+.message.error {
+    background-color: #f8d7da; /* Light red */
+    color: #721c24; /* Dark red text */
+    border: 1px solid #f5c6cb; /* Red border */
+}
+
+
+/* --- Cart Summary section styling --- */
+.checkout-cart-summary {
+    margin-bottom: 30px; /* Space below the summary */
+    padding: 20px;
+    border: 1px solid #eee; /* Light border */
+    border-radius: 5px;
+    background-color: #fdfdfd; /* Slightly off-white background */
+}
+
+/* Heading for the summary */
+.checkout-cart-summary h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--secondary); /* Use a color from your theme */
+    border-bottom: 1px solid #eee; /* Separator line */
+    padding-bottom: 10px;
+}
+
+/* Styles for rows within the summary (product items, subtotal, shipping) */
+.checkout-cart-summary .summary-item-row,
+.checkout-cart-summary .summary-row {
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Put space between left and right content */
+    padding: 8px 0;
+    border-bottom: 1px dashed #eee; /* Dashed line between rows */
+    font-size: 0.95em; /* Slightly smaller text */
+}
+
+/* Style for the last item row before the total */
+.checkout-cart-summary .summary-row:last-of-type {
+    border-bottom: none; /* Remove dashed border above the total line */
+}
+
+/* Style for the total row */
+.checkout-cart-summary .summary-total {
+     font-weight: bold;
+     padding-top: 12px;
+     border-top: 1px solid #ddd; /* Solid line above total */
+     font-size: 1.1em; /* Slightly larger total text */
+}
+
+/* --- Form section styling --- */
+.checkout-form {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9; /* Light background for the form */
+}
+
+/* Heading for the form */
+.checkout-form h2 {
+    margin-top: 0;
+    color: var(--secondary-dark); /* Use a color from your theme */
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd; /* Separator line */
+    padding-bottom: 10px;
+}
+
+/* Wrapper for each label/input pair */
+.checkout-form .form-group {
+    margin-bottom: 18px; /* Space between form fields */
+}
+
+/* Styles for labels */
+.checkout-form label {
+    display: block; /* Make label appear on its own line */
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #555; /* Label color */
+}
+
+/* Styles for input fields and textarea */
+.checkout-form input[type="text"],
+.checkout-form input[type="email"], /* Style if you add email field */
+.checkout-form input[type="tel"],  /* Style if you use type="tel" for phone */
+.checkout-form textarea {
+    width: 100%; /* Make inputs fill their container */
+    padding: 12px;
+    border: 1px solid #ccc; /* Default border */
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in element's total width */
+    font-size: 1em;
+    transition: border-color 0.3s ease; /* Smooth transition for focus effect */
+}
+
+/* Style for inputs/textareas when they are focused */
+.checkout-form input[type="text"]:focus,
+.checkout-form input[type="email"]:focus,
+.checkout-form input[type="tel"]:focus,
+.checkout-form textarea:focus {
+    border-color: var(--primary); /* Highlight color on focus */
+    outline: none; /* Remove default browser outline */
+}
+
+/* Specific height for the textarea */
+.checkout-form textarea {
+    height: 80px;
+    resize: vertical; /* Allow users to resize only vertically */
+}
+
+/* Style for the submit button */
+.checkout-form button[type="submit"] {
+     display: block; /* Make button take full width */
+     width: 100%;
+     padding: 12px 20px;
+     background-color: var(--primary); /* Use your primary color variable */
+     color: white; /* White text */
+     border: none; /* No border */
+     border-radius: 5px; /* Rounded corners */
+     cursor: pointer; /* Indicate it's clickable */
+     font-size: 1.1em;
+     font-weight: bold;
+     transition: background-color 0.3s ease; /* Smooth hover effect */
+     margin-top: 20px; /* Space above the button */
+}
+
+.checkout-form button[type="submit"]:hover {
+     background-color: #FF85A2;
+     color: #f9f9f9; /* Darker shade on hover */
+}
+
+/* --- Optional: Add variables for your theme colors if you use them --- */
+/* This should ideally be in your main CSS file */
+/*
+:root {
+    --primary: #4CAF50;         // Example: Green
+    --primary-dark: #388E3C;    // Example: Darker Green
+    --secondary: #2196F3;       // Example: Blue
+    --secondary-dark: #1976D2;  // Example: Darker Blue
+
+    --text-color: #333;         // Example: Default text color
+    --background-color: #f4f4f4; // Example: Default page background
+
+    // Add variables for header, footer, link colors etc. if you define them here
+    // --header-bg: #ffffff;
+    // --footer-bg: #333;
+    // --link-color: #007bff;
+}
+*/
+
+/* --- Responsive Adjustments (Optional) --- */
+/* Add any responsive styles needed for the form layout here */
+/* Example:
+@media (max-width: 600px) {
+    .checkout-form .form-group {
+        margin-bottom: 15px;
+    }
+    .checkout-form input[type="text"],
+    .checkout-form textarea {
+        padding: 10px;
+    }
+}
+*/
