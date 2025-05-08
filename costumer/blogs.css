@@ -1,0 +1,490 @@
+/* blog.css - Bio Cosmetic Blog Styles */
+:root {
+    --primary: #0c2d57;
+    --secondary: #e6edf4;
+    --accent: #FF85A2;
+    --dark: #3A3A3A;
+    --light: #F8F9FA;
+    --white: #FFFFFF;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body {
+    background-color: var(--light);
+    color: var(--dark);
+    line-height: 1.6;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+          /* --- Header --- */
+  header {
+    background-color: var(--white);
+    padding: 10px 4%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Ensure header is above other elements */
+    width: 100%; /* Ensure full width */
+  }
+  
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .logo {
+    height: 28px;
+    display: block; /* Prevents potential spacing issues */
+  }
+  
+  nav {
+      margin: 0 auto; /* Center nav */
+  }
+  
+  nav ul {
+    display: flex;
+    list-style: none;
+    gap: 20px; /* Increased spacing */
+  }
+  
+  nav ul li a {
+    text-decoration: none;
+    color: var(--dark);
+    font-weight: 400;
+    font-size: 13px;
+    padding: 5px 0; /* Add padding for hover area */
+    position: relative; /* For potential underline effect */
+    transition: color 0.2s;
+  }
+  
+  nav ul li a:hover,
+  nav ul li a.active {
+    color: var(--primary);
+    font-weight: 500;
+  }
+  
+  /* Optional: Underline effect on hover/active */
+  /*
+  nav ul li a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 50%;
+      background-color: var(--primary);
+      transition: width 0.3s ease, left 0.3s ease;
+  }
+  nav ul li a:hover::after,
+  nav ul li a.active::after {
+      width: 100%;
+      left: 0;
+  }
+  */
+  
+  /* --- Header Nav Right Styling --- */
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  
+  /* Style ONLY the ICON links (wishlist, basket) within nav-right */
+  .nav-right a:not(.login-btn):not(.profile-link) { /* Exclude login button and profile link */
+      color: var(--primary);
+      font-size: 17px;
+      transition: color 0.2s ease, transform 0.2s ease;
+      text-decoration: none;
+      display: inline-block; /* Allows transform */
+  }
+  
+  /* Apply hover ONLY to icon links */
+  .nav-right a:not(.login-btn):not(.profile-link):hover {
+      color: var(--accent);
+      transform: scale(1.1); /* Slight scale on hover */
+  }
+  
+  /* Style for the profile link container */
+  .profile-container {
+      line-height: 0;
+  }
+  .profile-container a { /* Style specifically for the profile link */
+      display: inline-block; /* Or block if needed */
+      text-decoration: none;
+      /* No color/font-size needed here as it contains only the image */
+  }
+  
+  .profile-pic {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--primary);
+    display: block;
+    transition: transform 0.3s ease, border-color 0.3s ease; /* Added border-color */
+  }
+  /* Profile pic specific hover */
+  .profile-container a:hover .profile-pic {
+      transform: rotate(10deg) scale(1.1);
+      border-color: var(--accent);
+  }
+  
+  
+  /* --- Login Button Styling (Should now work correctly) --- */
+  .login-btn {
+    padding: 6px 15px;
+    background-color: var(--primary);
+    color: var(--white); /* THIS IS THE FIX - Text is explicitly white */
+    border: none;
+    border-radius: 15px;
+    font-size: 13px; /* Specific font size for the button */
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
+    text-decoration: none;
+    display: inline-block; /* Ensure proper display */
+    line-height: normal; /* Ensure default line height */
+    text-align: center; /* Ensure text is centered */
+  }
+  
+  .login-btn:hover {
+    background-color: var(--accent);
+    color: var(--white); /* Keep text white on hover */
+    transform: translateY(-2px); /* Button lift effect */
+  }
+  
+  /* --- Container for page content --- */
+  .container {
+    padding: 30px 4%; /* Add padding around main content */
+    width: 100%;
+    max-width: 1300px; /* Limit max width for very large screens */
+    margin: 0 auto; /* Center container */
+  }
+  
+  
+  .container {
+    flex-grow: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  /* Blog Header */
+  .blog-header {
+    text-align: center;
+    padding: 80px 0 50px;
+    margin-bottom: 40px;
+    animation: fadeIn 1s ease-out;
+  }
+  
+  .blog-header h1 {
+    font-size: 2.8rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  
+  .blog-header p {
+    font-size: 1.2rem;
+    color: var(--dark);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  
+  /* Featured Post */
+  .featured-post {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 60px;
+    transition: all 0.3s ease;
+    animation: slideUp 0.8s ease-out;
+  }
+  
+  .featured-post:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  }
+  
+  .featured-image {
+    width: 100%;
+    height: 100%;
+    min-height: 350px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .featured-post:hover .featured-image {
+    transform: scale(1.03);
+  }
+  
+  .featured-content {
+    padding: 50px 40px 50px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .featured-tag {
+    display: inline-block;
+    background-color: var(--secondary);
+    color: var(--primary);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    align-self: flex-start;
+  }
+  
+  .featured-title {
+    font-size: 2.2rem;
+    color: var(--primary);
+    margin-bottom: 25px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  
+  .featured-excerpt {
+    font-size: 1.1rem;
+    color: var(--dark);
+    margin-bottom: 35px;
+    line-height: 1.7;
+  }
+  
+  /* Blog Grid */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 40px;
+    margin-bottom: 80px;
+  }
+  
+  .blog-card {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    animation: fadeIn 0.8s ease-out;
+    animation-fill-mode: both;
+  }
+  
+  .blog-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  }
+  
+  .blog-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .blog-card:hover .blog-image {
+    transform: scale(1.08);
+  }
+  
+  .blog-content {
+    padding: 30px;
+  }
+  
+  .blog-date {
+    color: #7a9c88;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+  
+  .blog-date::before {
+    content: "📅";
+    margin-right: 8px;
+  }
+  
+  .blog-title {
+    font-size: 1.4rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  
+  .blog-excerpt {
+    font-size: 1rem;
+    color: var(--dark);
+    margin-bottom: 25px;
+    line-height: 1.7;
+  }
+  
+  .read-more {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--primary);
+    color: var(--white);
+    padding: 12px 28px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .read-more:hover {
+    background-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 133, 162, 0.3);
+  }
+  
+  .read-more::after {
+    content: "→";
+    margin-left: 8px;
+    transition: transform 0.3s ease;
+  }
+  
+  .read-more:hover::after {
+    transform: translateX(3px);
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 1200px) {
+    .featured-title {
+      font-size: 2rem;
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .featured-post {
+      grid-template-columns: 1fr;
+    }
+    
+    .featured-content {
+      padding: 40px;
+    }
+    
+    .featured-image {
+      height: 350px;
+    }
+    
+    .blog-grid {
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 30px;
+    }
+    
+    .blog-header h1 {
+      font-size: 2.4rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .blog-header {
+      padding: 60px 0 40px;
+    }
+    
+    .blog-header h1 {
+      font-size: 2rem;
+    }
+    
+    .blog-header p {
+      font-size: 1.1rem;
+    }
+    
+    .featured-title {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+    
+    .featured-excerpt {
+      font-size: 1rem;
+      margin-bottom: 30px;
+    }
+    
+    .blog-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    
+    .blog-title {
+      font-size: 1.3rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .blog-header {
+      padding: 50px 0 30px;
+    }
+    
+    .blog-header h1 {
+      font-size: 1.8rem;
+    }
+    
+    .featured-post {
+      margin-bottom: 40px;
+    }
+    
+    .featured-image {
+      height: 280px;
+    }
+    
+    .featured-content {
+      padding: 30px;
+    }
+    
+    .featured-title {
+      font-size: 1.5rem;
+    }
+    
+    .blog-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .blog-image {
+      height: 220px;
+    }
+    
+    .read-more {
+      padding: 10px 24px;
+      font-size: 0.95rem;
+    }
+  }
+  

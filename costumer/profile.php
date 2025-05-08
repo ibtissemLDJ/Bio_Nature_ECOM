@@ -117,40 +117,7 @@ $conn->close();
    
 </head>
 <body>
-
-    <header>
-         <div class="logo-container"><a href="index.php"><img src="images/logo.png" alt="Nescare Logo" class="logo" style="height: 40px;"></a></div>
-        <nav>
-             </nav>
-        <div class="nav-right">
-             <a href="wishlist.php" title="Your Wishlist"><i class="fas fa-heart"></i></a>
-             <a href="basket.php" title="Your Cart"><i class="fas fa-shopping-basket"></i></a>
-             <?php if (isset($_SESSION['user_id'])): ?>
-                <div class="profile-container-small"> <a href="profile.php" title="Your Profile">
-                         <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile" class="profile-pic-small" style="height: 30px; width: 30px; border-radius: 50%; object-fit: cover;">
-                     </a>
-                </div>
-             <?php else: ?>
-                 <a href="login.php" class="login-btn">Login</a>
-             <?php endif; ?>
-         </div>
-         <?php
-         // Display session messages (success, warning, error) - good practice to do this in the main layout/header
-         if (isset($_SESSION['success_message'])): ?>
-             <div class="message success"><?php echo htmlspecialchars($_SESSION['success_message']); ?></div>
-             <?php unset($_SESSION['success_message']);
-         endif;
-         if (isset($_SESSION['warning_message'])): ?>
-             <div class="message warning"><?php echo htmlspecialchars($_SESSION['warning_message']); ?></div>
-             <?php unset($_SESSION['warning_message']);
-         endif;
-         if (isset($_SESSION['error_message'])): ?>
-             <div class="message error"><?php echo htmlspecialchars($_SESSION['error_message']); ?></div>
-             <?php unset($_SESSION['error_message']);
-         endif;
-         ?>
-    </header>
-
+<?php require_once 'header.php' ?>
 
     <main class="profile-container">
         <div class="profile-header">
@@ -205,9 +172,7 @@ $conn->close();
     // Replace this with your actual footer include if you have one
     // Example: include 'footer.php';
     ?>
-    <footer>
-         <div class="copyright"><p>&copy; 2025 Nescare. All rights reserved.</p></div>
-    </footer>
+   <?php require_once 'footer.php' ?>
 
     <script>
         // Logout confirmation function remains the same

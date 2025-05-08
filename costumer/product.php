@@ -138,50 +138,7 @@ function isProductInWishlist($item_id, $conn) {
     
 </head>
 <body>
-    <?php // Include header - you might have a separate header file ?>
-    <header>
-         <div class="logo-container">
-            <a href="landing.php"><img src="images/logo.png" alt="Nescare Logo" class="logo" /></a>
-             </div>
-        <nav>
-             <ul>
-                 <li><a href="product.php" class="active">Shop</a></li>
-                 <li><a href="about.php">About</a></li>
-                 <li><a href="ingredients.php">Ingredients</a></li>
-                 <li><a href="blog.php">Blog</a></li>
-                 <li><a href="contact.php">Contact</a></li>
-             </ul>
-        </nav>
-        <div class="nav-right">
-              <a href="wishlist.php" title="Wishlist"><i class="fas fa-heart"></i></a>
-              <a href="basket.php" title="Cart"><i class="fas fa-shopping-basket"></i></a>
-             <?php if (isset($_SESSION['user_id'])): ?>
-                  <div class="profile-container-small"> <a href="profile.php" title="Your Profile - <?php echo htmlspecialchars($username); ?>">
-                          <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="profile-pic">
-                      </a>
-                  </div>
-             <?php else: ?>
-                  <a href="login.php" class="login-btn">Login</a>
-             <?php endif; ?>
-         </div>
-         <?php
-         // Display session messages (success, warning, error)
-         // You might want to place this outside the fixed header if header is fixed
-         if (isset($_SESSION['success_message'])): ?>
-             <div class="message success"><?php echo htmlspecialchars($_SESSION['success_message']); ?></div>
-             <?php unset($_SESSION['success_message']);
-         endif;
-         if (isset($_SESSION['warning_message'])): ?>
-             <div class="message warning"><?php echo htmlspecialchars($_SESSION['warning_message']); ?></div>
-             <?php unset($_SESSION['warning_message']);
-         endif;
-         if (isset($_SESSION['error_message'])): ?>
-             <div class="message error"><?php echo htmlspecialchars($_SESSION['error_message']); ?></div>
-             <?php unset($_SESSION['error_message']);
-         endif;
-         ?>
-    </header>
-
+   <?php require_once 'header.php'; ?>
     <div class="container">
          <?php
          // If header is fixed, messages might be hidden under it.
@@ -272,44 +229,8 @@ function isProductInWishlist($item_id, $conn) {
          </div>
           </div>
 
-    <?php // Include footer - you might have a separate footer file ?>
-    <footer>
-        <div>
-            <h3>Shop</h3>
-            <ul>
-                <li><a href="?category=1">Skincare</a></li>
-                <li><a href="?category=2">Makeup</a></li>
-                <li><a href="?category=3">Hair Care</a></li>
-                <li><a href="?category=4">Body Care</a></li>
-                <li><a href="#">Gift Sets</a></li> </ul>
-        </div>
-        <div>
-            <h3>About</h3>
-            <ul>
-                <li><a href="about.php">Our Story</a></li>
-                <li><a href="ingredients.php">Ingredients</a></li>
-                <li><a href="#">Sustainability</a></li> <li><a href="blog.php">Blog</a></li>
-                <li><a href="#">Press</a></li> </ul>
-        </div>
-        <div>
-            <h3>Help</h3>
-            <ul>
-                <li><a href="contact.php">Contact Us</a></li>
-                <li><a href="#">FAQs</a></li> <li><a href="#">Shipping</a></li> <li><a href="#">Returns</a></li> <li><a href="#">Track Order</a></li> </ul>
-        </div>
-        <div>
-            <h3>Connect</h3>
-            <ul>
-                <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a></li>
-                <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i> Facebook</a></li>
-                <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i> Twitter</a></li>
-                <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-pinterest"></i> Pinterest</a></li>
-            </ul>
-        </div>
-        <div class="copyright">
-            <p>&copy; <?php echo date("Y"); ?> Nescare. All rights reserved.</p>
-        </div>
-    </footer>
+    <?php require_once 'footer.php'; ?>
+
 
 <script>
     // JavaScript for category filter dropdown

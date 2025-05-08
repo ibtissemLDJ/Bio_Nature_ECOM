@@ -158,34 +158,7 @@ $conn->close();
 
 </head>
 <body>
-    <?php // Include header - replace with your actual header include if you use one ?>
-    <header>
-         <div class="logo-container">
-             <a href="index.php"><img src="images/logo.png" alt="Nescare Logo" class="logo"></a>
-         </div>
-         <nav>
-             <ul>
-                 <li><a href="product.php">Shop</a></li>
-                 <li><a href="#">About</a></li>
-                 <li><a href="#">Ingredients</a></li>
-                 <li><a href="#">Blog</a></li>
-                 <li><a href="#">Contact</a></li>
-             </ul>
-         </nav>
-         <div class="nav-right">
-              <a href="wishlist.php" title="Your Wishlist"><i class="fas fa-heart"></i></a>
-              <a href="basket.php" title="Your Cart"><i class="fas fa-shopping-basket"></i></a>
-             <?php if (isset($_SESSION['user_id'])): ?>
-                 <div class="profile-container">
-                     <a href="profile.php" title="Your Profile - <?php echo htmlspecialchars($username); ?>">
-                         <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile" class="profile-pic">
-                     </a>
-                 </div>
-             <?php else: ?>
-                 <a href="login.php" class="login-btn">Login</a>
-             <?php endif; ?>
-         </div>
-    </header>
+<?php require_once 'header.php' ?>
 
     <main class="product-detail-container">
         <?php
@@ -342,14 +315,8 @@ $conn->close();
         <button class="view-all-reviews">View All Reviews (Static 42)</button>
     </section>
 
-    <?php // Include footer - replace with your actual footer include ?>
-    <footer>
-         <div><h3>Shop</h3><ul><li><a href="#">Skincare</a></li><li><a href="#">Makeup</a></li><li><a href="#">Hair Care</a></li><li><a href="#">Body Care</a></li><li><a href="#">Gift Sets</a></li></ul></div>
-         <div><h3>About</h3><ul><li><a href="#">Our Story</a></li><li><a href="#">Ingredients</a></li><li><a href="#">Sustainability</a></li><li><a href="#">Blog</a></li><li><a href="#">Press</a></li></ul></div>
-         <div><h3>Help</h3><ul><li><a href="#">Contact Us</a></li><li><a href="#">FAQs</a></li><li><a href="#">Shipping</a></li><li><a href="#">Returns</a></li><li><a href="#">Track Order</a></li></ul></div>
-         <div><h3>Connect</h3><ul><li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li><li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li><li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li><li><a href="#"><i class="fab fa-pinterest"></i> Pinterest</a></li></ul></div>
-         <div class="copyright"><p>&copy; 2025 Nescare. All rights reserved.</p></div>
-    </footer>
+    <?php require_once 'footer.php' ?>
+
 
     <script>
         // JavaScript for quantity selector

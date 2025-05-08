@@ -151,37 +151,7 @@ if ($conn instanceof mysqli && !$conn->connect_error) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <header>
-         <div class="logo-container">
-             <a href="landing.php"><img src="images/logo.png" alt="Nescare Logo" class="logo"></a>
-         </div>
-         <nav>
-              <ul>
-                  <li><a href="product.php">Shop</a></li>
-                  <li><a href="about.php">About</a></li>
-                  <li><a href="ingredients.php">Ingredients</a></li>
-                  <li><a href="blog.php">Blog</a></li>
-                  <li><a href="contact.php">Contact</a></li>
-              </ul>
-         </nav>
-         <div class="nav-right">
-              <a href="wishlist.php" title="Your Wishlist"><i class="fas fa-heart"></i></a>
-              <?php if (isset($_SESSION['user_id'])): ?>
-                 <a href="basket.php" title="Cart"><i class="fas fa-shopping-basket active"></i></a>
-             <?php else: ?>
-                 <a href="login.php?redirect=checkout_info.php" title="Login to view Cart"><i class="fas fa-shopping-basket"></i></a>
-             <?php endif; ?>
-
-             <?php if (isset($_SESSION['user_id'])): ?>
-                  <div class="profile-container-small"> <a href="profile.php" title="Your Profile - <?php echo htmlspecialchars($username); ?>">
-                           <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="profile-pic">
-                       </a>
-                   </div>
-              <?php else: ?>
-                   <a href="login.php" class="login-btn">Login</a>
-              <?php endif; ?>
-         </div>
-
+<?php require_once 'header.php'; ?>
          <?php
          if (isset($_SESSION['success_message'])): ?>
             <div class="message success">
@@ -211,7 +181,7 @@ if ($conn instanceof mysqli && !$conn->connect_error) {
             </div>
           <?php endif; ?>
 
-    </header>
+
 
     <main class="checkout-container">
         <h1>Checkout</h1>
@@ -325,13 +295,6 @@ if ($conn instanceof mysqli && !$conn->connect_error) {
         </div>     
     </main>
 
-    <footer>
-         <div><h3>Shop</h3><ul><li><a href="#">Skincare</a></li><li><a href="#">Makeup</a></li><li><a href="#">Hair Care</a></li><li><a href="#">Body Care</a></li><li><a href="#">Gift Sets</a></li></ul></div>
-         <div><h3>About</h3><ul><li><a href="#">Our Story</a></li><li><a href="#">Ingredients</a></li><li><a href="#">Sustainability</a></li><li><a href="#">Blog</a></li><li><a href="#">Press</a></li></ul></div>
-         <div><h3>Help</h3><ul><li><a href="#">Contact Us</a></li><li><a href="#">FAQs</a></li><li><a href="#">Shipping</a></li><li><a href="#">Returns</a></li><li><a href="#">Track Order</a></li></ul></div>
-         <div><h3>Connect</h3><ul><li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li><li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li><li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li><li><a href="#"><i class="fab fa-pinterest"></i> Pinterest</a></li></ul></div>
-         <div class="copyright"><p>&copy; <?php echo date("Y"); ?> Nescare. All rights reserved.</p></div>
-    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

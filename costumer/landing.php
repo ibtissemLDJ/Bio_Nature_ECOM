@@ -97,46 +97,9 @@ function isProductInWishlist($item_id, $conn) {
 
 </head>
 <body>
-<header>
-         <div class="logo-container">
-             <a href="landing.php"><img src="images/logo.png" alt="Nescare Logo" class="logo" /></a>
-              </div>
-         <nav>
-              <ul>
-                  <li><a href="product.php" class="active">Shop</a></li>
-                  <li><a href="about.php">About</a></li>
-                  <li><a href="ingredients.php">Ingredients</a></li>
-                  <li><a href="blog.php">Blog</a></li>
-                  <li><a href="contact.php">Contact</a></li>
-              </ul>
-         </nav>
-         <div class="nav-right">
-             <?php if (isset($_SESSION['user_id'])): ?>
-                 <a href="wishlist.php" title="Wishlist"><i class="fas fa-heart"></i></a>
-             <?php else: ?>
-                 <a href="login.php?redirect=landing.php" title="Login to view Wishlist"><i class="fas fa-heart"></i></a>
-             <?php endif; ?>
-
-              <?php if (isset($_SESSION['user_id'])): ?>
-                  <a href="basket.php" title="Cart"><i class="fas fa-shopping-basket"></i></a>
-              <?php else: ?>
-                  <a href="login.php?redirect=landing.php" title="Login to view Cart"><i class="fas fa-shopping-basket"></i></a>
-              <?php endif; ?>
-
-             <?php if (isset($_SESSION['user_id'])): ?>
-                  <div class="profile-container-small"> <a href="profile.php" title="Your Profile - <?php echo htmlspecialchars($username); ?>">
-                           <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="profile-pic">
-                       </a>
-                   </div>
-              <?php else: ?>
-                   <a href="login.php" class="login-btn">Login</a>
-              <?php endif; ?>
-           </div>
-     </header>
-
+<?php require_once 'header.php' ?>
      <?php
-     // --- Session Messages Display (Upgraded UI) ---
-     // Place this where you want messages to appear, typically below the header
+     
      if (isset($_SESSION['success_message'])): ?>
          <div class="message success">
              <?php echo htmlspecialchars($_SESSION['success_message']); ?>
@@ -268,17 +231,17 @@ function isProductInWishlist($item_id, $conn) {
      </section>
 
      <section class="video-section">
-          <h2>Our Story</h2>
-          <p>Discover the Nescare difference</p>
-          <div class="video-container">
-              <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE"
-                      frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowfullscreen
-                      title="BEST BEAUTY PRODUCTS OF 2024">
-              </iframe>
-          </div>
-     </section>
+    <h2>Our Story</h2>
+    <p>Discover the Nescare difference</p>
+    <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/otej7WLdPh0?si=TtzB6ljXJSaPJaj-"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                title="Nescare - Our Story">
+        </iframe>
+    </div>
+</section>
 
      <section class="testimonials">
           <h2>What Our Customers Say</h2>
@@ -312,43 +275,7 @@ function isProductInWishlist($item_id, $conn) {
           </div>
      </section>
 
-     <footer>
-          <div>
-               <h3>Shop</h3>
-               <ul>
-                    <li><a href="?category=1">Skincare</a></li>
-                    <li><a href="?category=2">Makeup</a></li>
-                    <li><a href="?category=3">Hair Care</a></li>
-                    <li><a href="?category=4">Body Care</a></li>
-                    <li><a href="#">Gift Sets</a></li> </ul>
-          </div>
-          <div>
-               <h3>About</h3>
-               <ul>
-                    <li><a href="about.php">Our Story</a></li>
-                    <li><a href="ingredients.php">Ingredients</a></li>
-                    <li><a href="#">Sustainability</a></li> <li><a href="blog.php">Blog</a></li>
-                    <li><a href="#">Press</a></li> </ul>
-          </div>
-          <div>
-               <h3>Help</h3>
-               <ul>
-                    <li><a href="contact.php">Contact Us</a></li>
-                    <li><a href="#">FAQs</a></li> <li><a href="#">Shipping</a></li> <li><a href="#">Returns</a></li> <li><a href="#">Track Order</a></li></ul>
-          </div>
-          <div>
-               <h3>Connect</h3>
-               <ul>
-                    <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a></li>
-                    <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i> Facebook</a></li>
-                    <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i> Twitter</a></li>
-                    <li><a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-pinterest"></i> Pinterest</a></li>
-               </ul>
-          </div>
-          <div class="copyright">
-               <p>© <?php echo date("Y"); ?> Nescare. All rights reserved.</p>
-          </div>
-      </footer>
+     <?php require_once 'footer.php' ?>
 
      <script>
           // JavaScript for category filter dropdown

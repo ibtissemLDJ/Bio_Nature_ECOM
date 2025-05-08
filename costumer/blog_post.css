@@ -1,0 +1,231 @@
+/* Use the same variables as blog.css for consistency */
+:root {
+    --primary: #0c2d57;
+    --secondary: #e6edf4;
+    --accent: #FF85A2;
+    --dark: #3A3A3A;
+    --light: #F8F9FA;
+    --white: #FFFFFF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--light);
+    color: var(--dark);
+    line-height: 1.6;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.blog-post-container {
+    flex-grow: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.post-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.post-title {
+    font-size: 2.4rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.post-meta {
+    color: #7a9c88;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.post-meta::before {
+    content: "📅";
+    margin-right: 8px;
+}
+
+.post-image {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.post-image:hover {
+    transform: scale(1.02);
+}
+
+.post-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--dark);
+    margin-bottom: 50px;
+}
+
+.post-content p {
+    margin-bottom: 25px;
+}
+
+.post-content h2, 
+.post-content h3, 
+.post-content h4 {
+    color: var(--primary);
+    margin: 40px 0 20px;
+    font-weight: 600;
+}
+
+.post-content h2 {
+    font-size: 1.8rem;
+}
+
+.post-content h3 {
+    font-size: 1.5rem;
+}
+
+.post-content h4 {
+    font-size: 1.3rem;
+}
+
+.post-content a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.post-content a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.post-content ul, 
+.post-content ol {
+    margin-bottom: 25px;
+    padding-left: 30px;
+}
+
+.post-content li {
+    margin-bottom: 10px;
+}
+
+.post-content blockquote {
+    border-left: 4px solid var(--accent);
+    padding-left: 20px;
+    margin: 30px 0;
+    font-style: italic;
+    color: #555;
+}
+
+.back-to-blog {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--primary);
+    color: var(--white);
+    padding: 12px 28px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.back-to-blog:hover {
+    background-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 133, 162, 0.3);
+}
+
+.back-to-blog::before {
+    content: "←";
+    margin-right: 8px;
+    transition: transform 0.3s ease;
+}
+
+.back-to-blog:hover::before {
+    transform: translateX(-3px);
+}
+
+/* Animations - Reused from blog.css */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .blog-post-container {
+        max-width: 800px;
+    }
+    
+    .post-title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .blog-post-container {
+        padding: 30px 20px;
+    }
+    
+    .post-title {
+        font-size: 1.8rem;
+    }
+    
+    .post-content {
+        font-size: 1rem;
+    }
+    
+    .post-content h2 {
+        font-size: 1.6rem;
+    }
+    
+    .post-content h3 {
+        font-size: 1.4rem;
+    }
+    
+    .post-content h4 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .post-title {
+        font-size: 1.6rem;
+    }
+    
+    .post-header {
+        margin-bottom: 30px;
+    }
+    
+    .post-image {
+        margin-bottom: 30px;
+    }
+    
+    .back-to-blog {
+        padding: 10px 24px;
+        font-size: 0.95rem;
+    }
+}

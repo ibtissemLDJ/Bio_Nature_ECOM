@@ -11,8 +11,14 @@ if (!isset($_GET['order_id']) || !isset($_SESSION['user_id'])) {
 $order_id = $_GET['order_id'];
 $user_id = $_SESSION['user_id'];
 
+// Initialize default values
+$profile_picture = "images/user1.png";
+$username = "";
+$order = null;
+$order_items = [];
+
 try {
-    // Call your get_order_details procedure
+    // Get order details
     $stmt = $conn->prepare("CALL get_order_details(?, ?)");
     $stmt->bind_param("ii", $order_id, $user_id);
     $stmt->execute();
@@ -30,9 +36,31 @@ try {
     $order_items = $items_result->fetch_all(MYSQLI_ASSOC);
     
     $stmt->close();
+
+    // Get user profile information
+    $stmt_header_user = $conn->prepare("SELECT profile_picture, username FROM users WHERE user_id = ?");
+    if ($stmt_header_user) {
+        $stmt_header_user->bind_param("i", $user_id);
+        $stmt_header_user->execute();
+        $stmt_header_user->bind_result($profile_picture_db, $username_db);
+        if ($stmt_header_user->fetch()) {
+            $username = $username_db;
+            if (!empty($profile_picture_db) && file_exists($profile_picture_db)) {
+                $profile_picture = $profile_picture_db;
+            } elseif (!empty($profile_picture_db)) {
+                error_log("Profile picture file not found: " . $profile_picture_db . " for user_id: " . $user_id);
+            }
+        }
+        $stmt_header_user->close();
+    }
+
     $conn->close();
+    $conn = null;
 
 } catch (Exception $e) {
+    if (isset($conn) && $conn instanceof mysqli && !$conn->connect_error) {
+        $conn->close();
+    }
     error_log("Order confirmation error: " . $e->getMessage());
     $_SESSION['error_message'] = "Error retrieving order details: " . $e->getMessage();
     header('Location: index.php');
@@ -45,9 +73,9 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Confirmation | Nescare</title>
-    <link rel="stylesheet" href="checkout.css">
-    <link rel="stylesheet" href="landing.css">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="order_confirmation.css">
 </head>
 <body>
     <?php include 'header.php'; ?>
