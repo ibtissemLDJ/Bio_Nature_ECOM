@@ -1,422 +1,616 @@
 <?php
 session_start();
-// Include database connection
-// Make sure db_connection.php connects to your 'nescare' database
+
 require_once 'db_connection.php'; // Make sure this path is correct
 
-// Use a separate variable for DB password if db_connection.php doesn't handle it
-// $host = "localhost";
-// $user = "root";
-// $password_db = "";
-// $dbname = "nescare";
-// $conn = new mysqli($host, $user, $password_db, $dbname);
-// if ($conn->connect_error) {
-//     error_log("Database Connection failed: " . $conn->connect_error);
-//     die("An error occurred while connecting to the database. Please try again later.");
-// }
-
-// --- Get product ID from URL ---
-$product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-// --- Fetch product details from the database ---
+// Initialize variables
 $product = null;
-$additional_images = []; // Array to hold additional image URLs
+$additional_images = [];
+$other_products = [];
+$isInWishlist = false;
+$profile_picture = "images/user1.png"; // Default profile picture
+$username = ""; // Default username
+$error_message = "";
 
-if ($product_id > 0) {
-    // Table name 'items' is correct. Select all relevant columns.
-    $sql = "SELECT item_id, name, description, price, image_url, ingredients, how_to_use, shipping_returns_info, stock FROM items WHERE item_id = ?";
-    $stmt = $conn->prepare($sql);
-    if ($stmt) {
+// Validate and sanitize product ID from GET request
+$product_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT, [
+    'options' => ['min_range' => 1]
+]);
+
+// Redirect if product ID is invalid or missing
+if (!$product_id) {
+    error_log("Invalid or missing product ID in product_detail.php");
+    $error_message = "Invalid product ID provided.";
+    // Consider a redirect to a 404 page or homepage here in a real application
+}
+
+// Database connection handling
+$conn = false; // Initialize $conn to false
+try {
+    require 'db_connection.php'; // Include the connection file
+    if ($conn === false || $conn->connect_error) {
+         // If $conn was not set or connection failed during include
+        throw new Exception("Database Connection failed: " . ($conn ? $conn->connect_error : "Unknown error during connection include"));
+    }
+
+    if ($product_id) {
+        $sql = "SELECT * FROM items WHERE item_id = ?";
+        $stmt = $conn->prepare($sql);
+
+        if (!$stmt) {
+            throw new Exception("Database error preparing product query: " . $conn->error);
+        }
+
         $stmt->bind_param("i", $product_id);
         $stmt->execute();
         $result = $stmt->get_result();
-        if ($result && $result->num_rows > 0) {
+
+        if ($result->num_rows === 0) {
+            $error_message = "Product not found.";
+        } else {
             $product = $result->fetch_assoc();
 
-            // --- Fetch Additional Product Images ---
-            // Use the correct table name 'item_images'
-            // Fetch images for this product, excluding the main one if it's already stored in items.image_url
-            // A common approach is to fetch all and let the display logic handle main vs additional.
-            // Let's fetch all from item_images for this item.
-            $sql_images = "SELECT image_url FROM item_images WHERE item_id = ? ORDER BY is_main DESC, image_id ASC"; // Order by main first, then ID
+            // Fetch additional images
+            $sql_images = "SELECT image_url FROM item_images WHERE item_id = ? ORDER BY is_main DESC, image_id ASC";
             $stmt_images = $conn->prepare($sql_images);
+
             if ($stmt_images) {
                 $stmt_images->bind_param("i", $product_id);
                 $stmt_images->execute();
                 $result_images = $stmt_images->get_result();
+
                 while ($row_image = $result_images->fetch_assoc()) {
-                    // Add image URL to array, but make sure not to add the main image URL twice
-                    // if item_images also contains the main image and items.image_url is also used.
-                    // For simplicity, let's just add all from item_images for now.
-                    // If items.image_url is *always* the main one, you might check:
-                    // if ($row_image['image_url'] !== $product['image_url']) {
-                    //    $additional_images[] = $row_image['image_url'];
-                    // }
-                     $additional_images[] = $row_image['image_url'];
+                    $additional_images[] = $row_image['image_url'];
                 }
-                $result_images->free(); // Free the image result set
                 $stmt_images->close();
             } else {
-                 error_log("Database query failed for product images (product_detail.php): " . $conn->error);
+                 error_log("Database error preparing item_images query: " . $conn->error);
             }
-
-        } else {
-            error_log("Product with ID " . $product_id . " not found (product_detail.php).");
-             // Redirect to a 404 page or product list if product not found
-             // header("Location: product_not_found.php"); // Create this page
-             // exit();
         }
-        $result->free(); // Free the product result set
         $stmt->close();
-    } else {
-        error_log("Database query failed to prepare product detail query (product_detail.php): " . $conn->error);
-        // $_SESSION['error_message'] = "Database error retrieving product details.";
     }
-} else {
-     // If product ID is missing or invalid in the URL
-     // header("Location: product.php"); // Redirect to product listing
-     // exit();
-     $message = "Invalid product ID."; // Set a message to display
-}
 
+    // Fetch other products only if a product was found
+    if ($product) {
+        // Attempt to select items from the same category first
+        $category = $product['category_id'] ?? null; // Use null coalescing for safety
+        $limit = 4;
+        $excluded_ids = [$product_id]; // Always exclude the current product
+        $other_products = []; // Initialize the array
 
-// --- Profile picture & user info (for header) ---
-$profile_picture = "images/user1.png"; // Default
-$username = "";
-if (isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
-    // Use the correct table name 'users'
-    $stmt_user = $conn->prepare("SELECT profile_picture, username FROM users WHERE user_id = ?");
-    if ($stmt_user) {
-        $stmt_user->bind_param("i", $user_id);
-        $stmt_user->execute();
-        $stmt_user->bind_result($profile_picture_db, $username_db);
-         if ($stmt_user->fetch()) {
-             $username = $username_db;
-             // Check if the fetched profile picture path exists (good for relative paths)
-             if (!empty($profile_picture_db) && file_exists($profile_picture_db)) {
-                 $profile_picture = $profile_picture_db;
-             } elseif (!empty($profile_picture_db)) {
-                  error_log("Profile picture file not found: " . $profile_picture_db . " for user_id: " . $user_id);
+        if ($category) {
+             $sql_other_category = "SELECT item_id, name, price, image_url FROM items WHERE item_id != ? AND stock > 0 AND category_id = ? ORDER BY RAND() LIMIT ?";
+             $stmt_other_category = $conn->prepare($sql_other_category);
+             if ($stmt_other_category) {
+                $stmt_other_category->bind_param("iii", $product_id, $category, $limit);
+                $stmt_other_category->execute();
+                $result_other_category = $stmt_other_category->get_result();
+                 while ($row = $result_other_category->fetch_assoc()) {
+                    $other_products[] = $row;
+                    $excluded_ids[] = $row['item_id']; // Add found IDs to exclusion list
+                }
+                $stmt_other_category->close();
+             } else {
+                 error_log("Database error preparing other products (category) query: " . $conn->error);
              }
-         }
-         $stmt_user->close();
-    } else {
-        error_log("Database query failed for user profile (product_detail.php): " . $conn->error);
-        // $_SESSION['error_message'] = (isset($_SESSION['error_message']) ? $_SESSION['error_message'] . " " : "") . "Could not load user info for header.";
+        }
+
+        // If not enough products from the same category, fill with random ones
+        if (count($other_products) < $limit) {
+             $needed = $limit - count($other_products);
+
+             // Handle the IN clause with potentially dynamic number of placeholders
+             if (!empty($excluded_ids)) {
+                 $excluded_placeholders = implode(',', array_fill(0, count($excluded_ids), '?'));
+                 $sql_other_random = "SELECT item_id, name, price, image_url FROM items WHERE item_id NOT IN (" . $excluded_placeholders . ") AND stock > 0 ORDER BY RAND() LIMIT ?";
+                 $stmt_other_random = $conn->prepare($sql_other_random);
+
+                 if ($stmt_other_random) {
+                      // Prepare types string and bind parameters array
+                     $types = str_repeat('i', count($excluded_ids)) . 'i';
+                     $bind_params = array_merge($excluded_ids, [$needed]);
+
+                     // Use call_user_func_array to bind parameters dynamically
+                     $stmt_other_random->bind_param($types, ...$bind_params);
+
+                     $stmt_other_random->execute();
+                     $result_other_random = $stmt_other_random->get_result();
+                     while ($row = $result_other_random->fetch_assoc()) {
+                        $other_products[] = $row;
+                     }
+                     $stmt_other_random->close();
+
+                 } else {
+                      error_log("Database error preparing other products (random fill) query: " . $conn->error);
+                       // Fallback if the prepared statement failed
+                       // (Could add a simpler random query here if needed, but logging the error is crucial)
+                 }
+             } else {
+                 // This case should ideally not happen if $product_id is valid, but handle defensively
+                  $sql_other_fallback = "SELECT item_id, name, price, image_url FROM items WHERE stock > 0 ORDER BY RAND() LIMIT ?";
+                  $stmt_other_fallback = $conn->prepare($sql_other_fallback);
+                  if($stmt_other_fallback) {
+                      $stmt_other_fallback->bind_param("i", $limit);
+                      $stmt_other_fallback->execute();
+                      $result_other_fallback = $stmt_other_fallback->get_result();
+                       while ($row = $result_other_fallback->fetch_assoc()) {
+                            $other_products[] = $row;
+                       }
+                       $stmt_other_fallback->close();
+                  } else {
+                       error_log("Database error preparing other products (empty excluded fallback) query: " . $conn->error);
+                  }
+
+             }
+
+             // Ensure unique products in case of overlap (unlikely with correct exclusion)
+             $other_products = array_unique($other_products, SORT_REGULAR);
+
+             // Shuffle final list and trim to exactly $limit
+             shuffle($other_products);
+             $other_products = array_slice($other_products, 0, $limit);
+
+        }
+    }
+
+
+    // Check if product is in wishlist
+    if (isset($_SESSION['user_id']) && $product) {
+        $user_id = $_SESSION['user_id'];
+        $sql_wishlist = "SELECT COUNT(*) FROM favorites WHERE user_id = ? AND item_id = ?";
+        $stmt_wishlist = $conn->prepare($sql_wishlist);
+
+        if ($stmt_wishlist) {
+            $stmt_wishlist->bind_param("ii", $user_id, $product['item_id']);
+            $stmt_wishlist->execute();
+            $stmt_wishlist->bind_result($count);
+            $stmt_wishlist->fetch();
+            $isInWishlist = $count > 0;
+            $stmt_wishlist->close();
+        } else {
+             error_log("Database error preparing wishlist query: " . $conn->error);
+        }
+    }
+
+    // Fetch user profile picture and username if logged in (for potential future comment form)
+    if (isset($_SESSION['user_id'])) {
+        $user_id = $_SESSION['user_id'];
+        $stmt_user = $conn->prepare("SELECT profile_picture, username FROM users WHERE user_id = ?");
+
+        if ($stmt_user) {
+            $stmt_user->bind_param("i", $user_id);
+            $stmt_user->execute();
+            $stmt_user->bind_result($profile_picture_db, $username_db);
+
+            if ($stmt_user->fetch()) {
+                $username = htmlspecialchars($username_db);
+                if (!empty($profile_picture_db)) {
+                    $profile_picture = htmlspecialchars($profile_picture_db);
+                }
+            }
+            $stmt_user->close();
+        } else {
+             error_log("Database error preparing user info query: " . $conn->error);
+        }
+    }
+
+} catch (Exception $e) {
+    error_log("Error in product_detail.php: " . $e->getMessage());
+    $error_message = "An error occurred while loading the product details. Please try again later.";
+} finally {
+    // Close connection only if it was successfully opened and is a mysqli object
+    if (isset($conn) && $conn instanceof mysqli && !$conn->connect_error) {
+        $conn->close();
     }
 }
-
-// --- Check if product is in wishlist (for wishlist button state) ---
-// Pass connection object to the function
-function isProductInWishlist($item_id, $conn) {
-    // Initialize session wishlist for guests if not already done
-    if (!isset($_SESSION['wishlist']) || !is_array($_SESSION['wishlist'])) {
-        $_SESSION['wishlist'] = [];
-    }
-
-     if (isset($_SESSION['user_id'])) {
-         $user_id = $_SESSION['user_id'];
-         // Use the correct table name 'favorites'
-         $stmt = $conn->prepare("SELECT COUNT(*) FROM favorites WHERE user_id = ? AND item_id = ?");
-         if ($stmt) {
-             $stmt->bind_param("ii", $user_id, $item_id);
-             $stmt->execute();
-             $stmt->bind_result($count);
-             $stmt->fetch();
-             $stmt->close();
-             return $count > 0;
-         } else {
-             error_log("Database query failed for checking wishlist status (product_detail.php function): " . $conn->error);
-             // Fallback to session check in case of DB error
-             return isset($_SESSION['wishlist'][$item_id]);
-         }
-     } else {
-         // Check session wishlist for guest users
-         return isset($_SESSION['wishlist'][$item_id]); // Assumes item_id is used as key
-     }
-}
-
-// Only call the function if a product was successfully fetched
-$isInWishlist = false; // Default state
-if ($product) {
-    $isInWishlist = isProductInWishlist($product['item_id'], $conn);
-}
-
-
-// --- Close Database Connection ---
-// Close only after all database operations are complete
-$conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $product ? htmlspecialchars($product['name']) . ' | Nescare Organic Beauty' : 'Product Not Found | Nescare Organic Beauty'; ?></title>
-    <link rel="stylesheet" href="product_detail.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+    <title><?= $product ? htmlspecialchars($product['name']) . ' | Nescare' : 'Product Not Found | Nescare' ?></title>
+    <link rel="stylesheet" href="product_details.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-<?php require_once 'header.php' ?>
 
-    <main class="product-detail-container">
-        <?php
-        // Display session messages (success, warning, error)
-        // If header is fixed, consider displaying these inside main or a container
-        if (isset($_SESSION['success_message'])): ?>
-            <div class="message success"><?php echo htmlspecialchars($_SESSION['success_message']); ?></div>
-            <?php unset($_SESSION['success_message']);
-        endif;
-        if (isset($_SESSION['warning_message'])): ?>
-            <div class="message warning"><?php echo htmlspecialchars($_SESSION['warning_message']); ?></div>
-            <?php unset($_SESSION['warning_message']);
-        endif;
-        if (isset($_SESSION['error_message'])): ?>
-            <div class="message error"><?php echo htmlspecialchars($_SESSION['error_message']); ?></div>
-            <?php unset($_SESSION['error_message']);
-        endif;
-        ?>
+<?php require_once 'header.php'; ?>
 
-        <?php if ($product): ?>
+<main class="product-detail-container">
+    <?php if (!empty($error_message)): ?>
+        <div class="error-message"><?= htmlspecialchars($error_message) ?></div>
+    <?php elseif ($product): ?>
+        <div class="product-top-section">
             <div class="product-gallery">
                 <div class="main-image">
-                    <img src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" id="mainProductImage">
+                    <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" id="mainProductImage" onerror="this.src='images/default-product.jpg'">
                 </div>
-                <div class="thumbnail-container">
-                    <div class="thumbnail active" onclick="changeImage('<?php echo htmlspecialchars($product['image_url']); ?>', this)">
-                        <img src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?> thumbnail">
-                    </div>
-                    <?php
-                    // --- Loop and display additional images from item_images table ---
-                    // Filter out the main image if it's duplicated in item_images
-                    $displayed_thumbnails = [$product['image_url']]; // Keep track of images already displayed
 
-                    foreach ($additional_images as $img_url):
-                        if (!in_array($img_url, $displayed_thumbnails)): // Avoid duplicates
-                           $displayed_thumbnails[] = $img_url; // Add to displayed list
-                    ?>
-                         <div class="thumbnail" onclick="changeImage('<?php echo htmlspecialchars($img_url); ?>', this)">
-                             <img src="<?php echo htmlspecialchars($img_url); ?>" alt="<?php echo htmlspecialchars($product['name']); ?> thumbnail">
-                         </div>
-                    <?php
-                        endif;
-                    endforeach;
-                    ?>
-                </div>
+                <?php if (!empty($additional_images)): ?>
+                    <div class="thumbnail-container">
+                        <div class="thumbnail active" onclick="changeImage('<?= htmlspecialchars($product['image_url']) ?>', this)">
+                            <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="<?= htmlspecialchars($product['name']) ?> thumbnail" onerror="this.src='images/default-product-thumb.jpg'">
+                        </div>
+                        <?php foreach ($additional_images as $img_url): ?>
+                            <div class="thumbnail" onclick="changeImage('<?= htmlspecialchars($img_url) ?>', this)">
+                                <img src="<?= htmlspecialchars($img_url) ?>" alt="<?= htmlspecialchars($product['name']) ?> thumbnail" onerror="this.src='images/default-product-thumb.jpg'">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="product-info">
-                <h1 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h1>
+                <h1 class="product-title"><?= htmlspecialchars($product['name']) ?></h1>
                 <div class="product-meta">
-                    <div class="rating">
-                        <?php // TODO: Replace with dynamic rating calculation from a 'reviews' table ?>
-                        <div class="stars">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <span class="review-count">(TODO: Dynamic Review Count)</span>
+                    <div class="price">$<?= number_format($product['price'], 2) ?></div>
+                    <div class="stock-status">
+                        <?php if ($product['stock'] > 0): ?>
+                            <span class="in-stock"><i class="fas fa-check-circle"></i> In Stock (<?= $product['stock'] ?>)</span>
+                        <?php else: ?>
+                            <span class="out-of-stock"><i class="fas fa-times-circle"></i> Out of Stock</span>
+                        <?php endif; ?>
                     </div>
-                    <div class="price">$<?php echo htmlspecialchars(number_format($product['price'], 2)); ?></div>
                 </div>
-
                 <div class="product-description">
-                    <p><?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
-                    <ul class="benefits-list">
-                        <li><i class="fas fa-check"></i> 100% organic ingredients</li>
-                        <li><i class="fas fa-check"></i> Cruelty-free & vegan</li>
-                        <li><i class="fas fa-check"></i> Suitable for all skin types</li>
-                        <li><i class="fas fa-check"></i> Free from parabens and sulfates</li>
-                    </ul>
+                    <p><?= nl2br(htmlspecialchars($product['description'])) ?></p>
                 </div>
 
-                <div class="product-variants">
-                    <?php // TODO: Implement dynamic variants based on a 'product_variants' table ?>
-                    <div class="variant-option">
-                         <label for="size">Size</label>
-                         <select id="size" name="size">
-                             <option value="30ml">30ml ($<?php echo htmlspecialchars(number_format($product['price'], 2)); ?>)</option>
-                             <option value="50ml">50ml (Price varies)</option>
-                         </select>
+                <?php if ($product['stock'] > 0): ?>
+                    <div class="quantity-selector">
+                        <label for="quantity">Quantity</label>
+                        <div class="quantity-control">
+                            <button type="button" class="quantity-btn minus"><i class="fas fa-minus"></i></button>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="<?= max(1, $product['stock']) ?>">
+                            <button type="button" class="quantity-btn plus"><i class="fas fa-plus"></i></button>
+                        </div>
                     </div>
-                </div>
-
-                <div class="quantity-selector">
-                    <label for="quantity">Quantity</label>
-                    <div class="quantity-control">
-                        <button class="quantity-btn minus"><i class="fas fa-minus"></i></button>
-                        <input type="number" id="quantity" name="quantity" value="1" min="1">
-                        <button class="quantity-btn plus"><i class="fas fa-plus"></i></button>
-                    </div>
-                </div>
+                <?php endif; ?>
 
                 <div class="product-actions">
-                     <form action="add_to_cart.php" method="post" style="display:inline-block;">
-                         <input type="hidden" name="item_id" value="<?php echo htmlspecialchars($product['item_id']); ?>">
-                         <input type="hidden" name="quantity" id="cart-quantity-input" value="1">
-                         <button type="submit" class="add-to-cart-btn">
-                             <i class="fas fa-shopping-basket"></i> Add to Cart
-                         </button>
-                     </form>
-                     <a href="add_to_wishlist.php?item_id=<?php echo htmlspecialchars($product['item_id']); ?>"
-                        class="wishlist-btn <?php echo $isInWishlist ? 'active' : ''; ?>">
-                          <i class="fas fa-heart"></i> <?php echo $isInWishlist ? 'In Wishlist' : 'Add to Wishlist'; ?>
-                     </a>
+                    <?php if ($product['stock'] > 0): ?>
+                        <form action="add_to_cart.php" method="post" class="add-to-cart-form">
+                            <input type="hidden" name="item_id" value="<?= $product['item_id'] ?>">
+                            <input type="hidden" name="quantity" id="cart-quantity-input" value="1">
+                            <button type="submit" class="add-to-cart-btn">
+                                <i class="fas fa-shopping-basket"></i> Add to Cart
+                            </button>
+                        </form>
+                    <?php endif; ?>
+
+                    <form action="toggle_wishlist.php" method="post" class="wishlist-form">
+                        <input type="hidden" name="item_id" value="<?= $product['item_id'] ?>">
+                        <button type="submit" class="wishlist-btn <?= $isInWishlist ? 'active' : '' ?>">
+                            <i class="fas fa-heart"></i>
+                            <?= $isInWishlist ? 'In Wishlist' : 'Add to Wishlist' ?>
+                        </button>
+                    </form>
                 </div>
 
-                <div class="product-details-accordion">
-                    <div class="accordion-item">
-                        <button class="accordion-header"><span>Ingredients</span><i class="fas fa-chevron-down"></i></button>
-                        <div class="accordion-content"><p><?php echo nl2br(htmlspecialchars($product['ingredients'])); ?></p></div>
+                 <?php if (!empty($product['ingredients'])): ?>
+                    <div class="product-details-section ingredients-section">
+                        <h3 class="toggle-header" onclick="toggleSection('ingredients-content')">
+                            Ingredients
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </h3>
+                        <div id="ingredients-content" class="toggle-content">
+                            <p><?= nl2br(htmlspecialchars($product['ingredients'])) ?></p>
+                        </div>
                     </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header"><span>How To Use</span><i class="fas fa-chevron-down"></i></button>
-                        <div class="accordion-content"><p><?php echo nl2br(htmlspecialchars($product['how_to_use'])); ?></p></div>
+                <?php endif; ?>
+
+                <?php if (!empty($product['how_to_use'])): ?>
+                    <div class="product-details-section howtouse-section">
+                        <h3 class="toggle-header" onclick="toggleSection('howtouse-content')">
+                            How to Use
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </h3>
+                        <div id="howtouse-content" class="toggle-content">
+                            <p><?= nl2br(htmlspecialchars($product['how_to_use'])) ?></p>
+                        </div>
                     </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header"><span>Shipping & Returns</span><i class="fas fa-chevron-down"></i></button>
-                        <div class="accordion-content"><p><?php echo nl2br(htmlspecialchars($product['shipping_returns_info'])); ?></p></div>
-                    </div>
+                <?php endif; ?>
+
+            </div> </div> <?php if (!empty($other_products)): ?>
+            <section class="related-products-section">
+                <h2>You might also like</h2>
+                <div class="products-grid">
+                    <?php foreach ($other_products as $other_product): ?>
+                        <a href="product_detail.php?id=<?= $other_product['item_id'] ?>" class="product-card">
+                             <div class="product-card-image-container">
+                                <img src="<?= htmlspecialchars($other_product['image_url']) ?>" alt="<?= htmlspecialchars($other_product['name']) ?>" onerror="this.src='images/default-product-thumb.jpg'">
+                                </div>
+                             <div class="product-card-info">
+                                <h4><?= htmlspecialchars($other_product['name']) ?></h4>
+                                <p class="product-card-description">Discover a hydrating solution for your skin...</p>
+                                <p class="price">$<?= number_format($other_product['price'], 2) ?></p>
+                             </div>
+                        </a>
+                    <?php endforeach; ?>
                 </div>
-            </div>
-        <?php else: ?>
-            <div class="product-not-found">
-                <h2>Product Not Found</h2>
-                 <?php if (isset($message)): ?>
-                     <p><?php echo htmlspecialchars($message); ?></p>
-                 <?php else: ?>
-                     <p>The product you are looking for does not exist or is currently unavailable.</p>
-                 <?php endif; ?>
-                <a href="product.php" class="btn">Back to Shop</a>
-            </div>
+            </section>
         <?php endif; ?>
-    </main>
 
-    <?php // Static Related Products Placeholder ?>
-    <section class="related-products">
-        <h2>You May Also Like</h2>
-        <div class="product-grid">
-             <div class="product">
-                 <div class="product-actions"><a href="#" title="Add to Wishlist"><i class="fas fa-heart"></i></a><a href="#" title="Add to Cart"><i class="fas fa-shopping-basket"></i></a></div>
-                 <img src="images/product2.png" alt="Hydrating Moisturizer">
-                 <div class="product-info"><h3>Hydrating Moisturizer</h3><p>Daily moisturizer with aloe vera and jojoba oil</p><p class="price">$24.99</p></div>
-             </div>
-             </div>
-    </section>
+        <section class="customer-reviews-section">
+            <h2>Customer Reviews </h2>
+            <div class="reviews-list">
+                <div class="review">
+                    <div class="review-header">
+                        <img src="https://randomuser.me/api/portraits/women/75.jpg" alt="Reviewer Avatar" class="reviewer-avatar">
+                        <div class="reviewer-info">
+                            <span class="reviewer-name">Anya S.</span>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i> (5/5)
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-text">This is exactly what my routine was missing! My skin feels so much smoother and looks visibly brighter. Will repurchase!</p>
+                     <span class="review-date">Reviewed on May 5, 2025</span>
+                </div>
 
-    <?php // Static Customer Reviews Placeholder ?>
-    <section class="product-reviews">
-        <h2>Customer Reviews</h2>
-        <div class="reviews-container">
-             <div class="review">
-                 <div class="reviewer-info"><img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah J." class="reviewer-avatar"><div class="reviewer-meta"><h4>Sarah J.</h4><div class="review-rating"><div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><span class="review-date">April 15, 2025</span></div></div></div>
-                 <div class="review-content"><h5>Amazing results!</h5><p>I've been using this serum for 3 weeks and already see a noticeable difference in my skin tone. My dark spots are fading and my complexion looks brighter. It absorbs quickly without leaving any sticky residue.</p></div>
-             </div>
+                <div class="review">
+                     <div class="review-header">
+                        <img src="https://randomuser.me/api/portraits/women/81.jpg" alt="Reviewer Avatar" class="reviewer-avatar">
+                        <div class="reviewer-info">
+                            <span class="reviewer-name">Chloe L.</span>
+                             <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i> (4.5/5)
+                            </div>
+                        </div>
+                     </div>
+                    <p class="review-text">Pretty good results! I've been using it for two weeks and can see a difference. It absorbed well and didn't irritate my sensitive skin.</p>
+                    <span class="review-date">Reviewed on May 2, 2025</span>
+                </div>
+
+                 <div class="review">
+                    <div class="review-header">
+                        <img src="https://randomuser.me/api/portraits/women/63.jpg" alt="Reviewer Avatar" class="reviewer-avatar">
+                        <div class="reviewer-info">
+                            <span class="reviewer-name">Isabelle R.</span>
+                             <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                 <i class="far fa-star"></i> (4/5)
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-text">Nice product, feels light on the skin. The packaging is sleek. Knocked off half a star because I wish the effects were a bit faster.</p>
+                     <span class="review-date">Reviewed on April 29, 2025</span>
+                </div>
+
+                 <div class="review">
+                    <div class="review-header">
+                        <img src="https://randomuser.me/api/portraits/men/47.jpg" alt="Reviewer Avatar" class="reviewer-avatar">
+                        <div class="reviewer-info">
+                            <span class="reviewer-name">Daniel K.</span>
+                             <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                 <i class="far fa-star"></i> (3.5/5)
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-text">It's okay, noticed slight improvement. Texture is a bit unusual.</p>
+                     <span class="review-date">Reviewed on April 20, 2025</span>
+                </div>
+
+                 <div class="review">
+                    <div class="review-header">
+                        <img src="https://randomuser.me/api/portraits/women/19.jpg" alt="Reviewer Avatar" class="reviewer-avatar">
+                        <div class="reviewer-info">
+                            <span class="reviewer-name">Olivia P.</span>
+                             <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                 <i class="fas fa-star"></i> (5/5)
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-text">Fantastic! Absorbed quickly and left no sticky residue. My skin feels hydrated all day. Highly recommend!</p>
+                     <span class="review-date">Reviewed on April 18, 2025</span>
+                </div>
+
+
             </div>
-        <button class="view-all-reviews">View All Reviews (Static 42)</button>
-    </section>
-
-    <?php require_once 'footer.php' ?>
+        </section>
 
 
-    <script>
-        // JavaScript for quantity selector
-        const quantityInput = document.getElementById('quantity');
-        const cartQuantityInput = document.getElementById('cart-quantity-input'); // Link to hidden form input
-        if(quantityInput && cartQuantityInput) {
-             // Update hidden input when visible input changes
-            quantityInput.addEventListener('change', function() {
-                 // Ensure value is at least 1
-                if (parseInt(this.value) < 1 || isNaN(parseInt(this.value))) {
-                    this.value = 1;
-                }
-                cartQuantityInput.value = this.value;
-            });
-            // Add event listeners to plus/minus buttons
-             const minusBtn = document.querySelector('.quantity-btn.minus');
-             const plusBtn = document.querySelector('.quantity-btn.plus');
+    <?php endif; ?>
+</main>
 
-             if (minusBtn && plusBtn) {
-                 minusBtn.addEventListener('click', function() {
-                     const currentValue = parseInt(quantityInput.value);
-                     if (currentValue > 1) {
-                         quantityInput.value = currentValue - 1;
-                         cartQuantityInput.value = quantityInput.value; // Update hidden input
-                     }
-                 });
+<?php require_once 'footer.php'; ?>
 
-                 plusBtn.addEventListener('click', function() {
-                     const currentValue = parseInt(quantityInput.value);
-                     quantityInput.value = currentValue + 1;
-                     cartQuantityInput.value = quantityInput.value; // Update hidden input
-                 });
-             } else {
-                 console.error("Quantity control buttons not found.");
-             }
+<script>
+// Image switching logic
+function changeImage(src, element) {
+    document.getElementById('mainProductImage').src = src;
+    document.querySelectorAll('.thumbnail').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+}
 
-        } else {
-             console.error("Quantity input elements not found.");
-        }
+// Quantity selector logic
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityInput = document.getElementById('quantity');
+    const minusBtn = document.querySelector('.quantity-btn.minus');
+    const plusBtn = document.querySelector('.quantity-btn.plus');
+    const cartQuantityInput = document.getElementById('cart-quantity-input'); // Hidden input for the form
 
-        // JavaScript for changing main image from thumbnails
-        function changeImage(src, clickedThumbnail) {
-            document.getElementById('mainProductImage').src = src;
-
-            // Remove 'active' class from all thumbnails
-            const thumbnails = document.querySelectorAll('.thumbnail');
-            thumbnails.forEach(thumb => thumb.classList.remove('active'));
-
-            // Add 'active' class to the clicked thumbnail
-            if (clickedThumbnail) {
-                clickedThumbnail.classList.add('active');
-            } else {
-                // If clickedThumbnail is not passed (e.g., on page load),
-                // find the thumbnail matching the initial main image source and make it active.
-                 document.querySelectorAll('.thumbnail img').forEach(img => {
-                     // Use endsWith for robustness if paths might differ slightly
-                     if (img.src.endsWith(src)) {
-                         img.parentElement.classList.add('active');
-                     }
-                 });
+    if (quantityInput && minusBtn && plusBtn && cartQuantityInput) {
+        minusBtn.addEventListener('click', function() {
+            let currentValue = parseInt(quantityInput.value);
+            if (currentValue > parseInt(quantityInput.min)) {
+                quantityInput.value = currentValue - 1;
+                cartQuantityInput.value = quantityInput.value; // Update hidden input
             }
-        }
-
-        // Initialize thumbnail active state on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const initialMainImageSrc = document.getElementById('mainProductImage').src;
-            changeImage(initialMainImageSrc); // Call changeImage to set the initial active thumbnail
-
-             // JavaScript for accordion functionality
-             const accordionHeaders = document.querySelectorAll('.accordion-header');
-             accordionHeaders.forEach(header => {
-                 header.addEventListener('click', function() {
-                     const accordionItem = this.parentElement; // Get the parent accordion-item
-                     const accordionContent = this.nextElementSibling;
-                     const icon = this.querySelector('i');
-
-                     // Close all other open accordions (optional)
-                     document.querySelectorAll('.accordion-item.active').forEach(item => {
-                         if (item !== accordionItem) {
-                             item.classList.remove('active');
-                             item.querySelector('.accordion-content').style.display = 'none';
-                             item.querySelector('.accordion-header i').classList.remove('fa-chevron-up');
-                             item.querySelector('.accordion-header i').classList.add('fa-chevron-down');
-                         }
-                     });
-
-                     // Toggle the clicked accordion
-                     const isVisible = accordionContent.style.display === 'block';
-                     accordionContent.style.display = isVisible ? 'none' : 'block';
-
-                     accordionItem.classList.toggle('active', !isVisible); // Add active class to item
-
-                     icon.classList.toggle('fa-chevron-down', isVisible);
-                     icon.classList.toggle('fa-chevron-up', !isVisible);
-                 });
-             });
-             // Initially hide all accordion content
-             document.querySelectorAll('.accordion-content').forEach(content => { content.style.display = 'none'; });
         });
 
-    </script>
+        plusBtn.addEventListener('click', function() {
+            let currentValue = parseInt(quantityInput.value);
+            if (currentValue < parseInt(quantityInput.max)) {
+                quantityInput.value = currentValue + 1;
+                 cartQuantityInput.value = quantityInput.value; // Update hidden input
+            }
+        });
+
+         // Ensure hidden input is updated if user types manually
+        quantityInput.addEventListener('input', function() {
+             // Sanitize input: ensure it's a number within min/max range
+             let value = parseInt(this.value);
+             const min = parseInt(this.min);
+             const max = parseInt(this.max);
+
+             if (isNaN(value) || value < min) {
+                 value = min;
+             } else if (value > max) {
+                 value = max;
+             }
+             this.value = value;
+             cartQuantityInput.value = value;
+        });
+         // Prevent invalid input like '-', '.' etc.
+         quantityInput.addEventListener('keypress', function(event) {
+            // Allow only digits
+            if (event.key < '0' || event.key > '9') {
+                event.preventDefault();
+            }
+        });
+
+    }
+
+     // Initial update for the hidden input value
+    if(quantityInput && cartQuantityInput) {
+         cartQuantityInput.value = quantityInput.value;
+    }
+});
+
+
+// Section toggle logic
+function toggleSection(contentId) {
+    const content = document.getElementById(contentId);
+    // Find the .toggle-header sibling that directly precedes the content div
+    const header = content.previousElementSibling;
+    const icon = header ? header.querySelector('.toggle-icon') : null;
+
+    // Ensure we found the elements
+    if (!content || !header) {
+        console.error("Toggle elements not found for ID:", contentId);
+        return;
+    }
+
+    if (content.classList.contains('active')) {
+        content.classList.remove('active');
+        // Use scrollHeight before setting max-height to 0 for smooth collapse
+        content.style.maxHeight = content.scrollHeight + "px"; // Set current height
+         requestAnimationFrame(() => {
+             content.style.maxHeight = '0'; // Collapse
+         });
+
+
+        // Add transition end listener to hide overflow/opacity after collapse animation
+        const collapseEndHandler = () => {
+             content.style.overflow = 'hidden';
+             content.style.opacity = '0';
+             content.removeEventListener('transitionend', collapseEndHandler);
+        };
+        // Listen for the end of the max-height transition
+        content.addEventListener('transitionend', collapseEndHandler, { once: true });
+
+
+        if (icon) {
+             icon.classList.remove('fa-chevron-up');
+             icon.classList.add('fa-chevron-down');
+        }
+    } else {
+        content.classList.add('active');
+         // Set initial styles before expanding for transition
+         content.style.overflow = 'hidden'; // Ensure overflow is hidden initially
+         content.style.opacity = '0'; // Ensure opacity is 0 initially
+         content.style.maxHeight = '0'; // Start from 0 max height
+
+
+        // Request a frame to ensure styles are applied before triggering transition
+        requestAnimationFrame(() => {
+             requestAnimationFrame(() => {
+                // Calculate height dynamically and expand
+                content.style.maxHeight = content.scrollHeight + "px";
+                 content.style.opacity = '1'; // Fade in
+                 // Remove overflow hidden after expand animation completes
+                 const expandEndHandler = () => {
+                    content.style.overflow = ''; // Remove overflow constraint
+                    content.removeEventListener('transitionend', expandEndHandler);
+                 };
+                 // Listen for the end of the max-height transition
+                 content.addEventListener('transitionend', expandEndHandler, { once: true });
+             });
+        });
+
+
+         if (icon) {
+             icon.classList.remove('fa-chevron-down');
+             icon.classList.add('fa-chevron-up');
+         }
+    }
+}
+
+// Optional: Adjust max-height on window resize for toggled sections
+// This ensures the section expands correctly if screen size changes while it's open
+window.addEventListener('resize', function() {
+     // Use a small delay to ensure scrollHeight is calculated after resize is potentially finished
+     setTimeout(() => {
+         document.querySelectorAll('.toggle-content.active').forEach(content => {
+             // Temporarily remove transition to avoid animation during resize
+             content.style.transition = 'none';
+             // Reset max-height based on new scrollHeight
+             content.style.maxHeight = content.scrollHeight + "px";
+             // Use requestAnimationFrame to re-apply transition after repaint
+             requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                   content.style.transition = 'max-height 0.6s ease-in-out, opacity 0.6s ease-in-out';
+                });
+             });
+         });
+     }, 50); // Small delay in ms
+});
+
+
+// Set initial state (closed) for toggled sections on page load
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toggle-content').forEach(content => {
+        content.style.maxHeight = '0'; // Collapse them initially
+        content.style.opacity = '0'; // Hide initially
+        content.style.overflow = 'hidden'; // Hide overflow initially
+        content.classList.remove('active'); // Ensure active class is not present initially
+         // Ensure icons are pointing down
+         // Find the preceding h3 with .toggle-header
+         let header = content.previousElementSibling;
+         if (header && header.classList.contains('toggle-header')) {
+             const icon = header.querySelector('.toggle-icon');
+             if (icon) {
+                 icon.classList.remove('fa-chevron-up');
+                 icon.classList.add('fa-chevron-down');
+             }
+         }
+    });
+});
+
+
+</script>
+
 </body>
 </html>

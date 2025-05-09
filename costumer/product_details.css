@@ -1,0 +1,795 @@
+/* product_details.css - Following products.css v1.2 Style - Updated */
+
+:root {
+    --primary: #0c2d57;
+    --secondary: #e6edf4;
+    --accent: #FF85A2; /* Use this for highlights like active wishlist */
+    --dark: #3A3A3A;
+    --light: #F8F9FA;
+    --white: #FFFFFF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--light);
+    color: var(--dark);
+    line-height: 1.4;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Main container for the product detail page */
+.product-detail-container {
+    flex-grow: 1; /* Allow container to grow and push footer down */
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px;
+    display: flex;
+    flex-direction: column; /* Stack sections vertically */
+    gap: 40px; /* Space between main sections */
+}
+
+.error-message {
+    color: var(--white); /* White text on a themed error background */
+    background-color: #dc3545; /* Bootstrap danger color or define a --error variable */
+    padding: 15px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* --- Product Top Section (Gallery and Info) --- */
+.product-top-section {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 40px; /* Increased gap */
+    background-color: var(--white); /* White background for the main block */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--secondary);
+}
+
+.product-gallery {
+    flex: 1 1 400px; /* Grow/shrink, basis 400px */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.main-image {
+    width: 100%;
+    max-width: 550px; /* Max size for the main image */
+    margin-bottom: 15px;
+    overflow: hidden; /* Hide parts during hover scale transition */
+    border-radius: 8px;
+    border: 1px solid var(--secondary);
+     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.main-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.4s ease-in-out; /* Smooth scale transition */
+}
+
+/* Optional: Scale effect on main image hover */
+.product-gallery:hover .main-image img {
+     transform: scale(1.05);
+}
+
+
+.thumbnail-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto; /* Allow horizontal scrolling if many thumbnails */
+    padding-bottom: 5px; /* Space for scrollbar on some systems */
+    padding-top: 5px; /* Space above thumbnails */
+}
+
+.thumbnail {
+    width: 70px; /* Adjust thumbnail size */
+    height: 70px;
+    border: 2px solid transparent; /* Transparent border by default */
+    border-radius: 8px; /* Match general rounding */
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+     background-color: var(--white); /* Explicit background */
+     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crop image to fit thumbnail */
+     border-radius: 6px; /* Slightly less rounded than container */
+}
+
+.thumbnail:hover {
+     transform: translateY(-3px); /* Lift effect on hover */
+     box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.thumbnail.active {
+    border-color: var(--primary); /* Highlight active thumbnail */
+    box-shadow: 0 0 8px rgba(12, 45, 87, 0.3); /* More prominent shadow */
+    transform: none; /* No lift on active */
+}
+
+
+.product-info {
+    flex: 1 1 450px; /* Grow/shrink, slightly larger basis */
+    display: flex; /* Use flex to structure contents vertically */
+    flex-direction: column;
+    gap: 20px; /* Gap between elements inside product-info */
+}
+
+.product-title {
+    font-size: 2.2em; /* Larger title */
+    margin-top: 0;
+    margin-bottom: 0; /* Adjusted gap handled by flex parent */
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.product-meta {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* Increased gap */
+    margin-bottom: 0; /* Adjusted gap handled by flex parent */
+    font-size: 1.2em; /* Slightly larger text */
+    padding-bottom: 15px; /* Separator space */
+    border-bottom: 1px solid var(--secondary);
+}
+
+.price {
+    font-size: 1.8em; /* Larger price */
+    font-weight: 700;
+    color: var(--primary); /* Primary color for price */
+}
+
+.stock-status {
+     font-size: 0.9em; /* Smaller text relative to price */
+     display: flex;
+     align-items: center;
+     gap: 5px;
+     font-weight: 600;
+}
+.stock-status i { font-size: 1.1em; } /* Icon size */
+
+.stock-status .in-stock {
+    color: #28a745; /* Standard green for in stock */
+}
+
+.stock-status .out-of-stock {
+    color: #dc3545; /* Standard red for out of stock */
+}
+
+.product-description {
+    margin-bottom: 0; /* Adjusted gap handled by flex parent */
+    color: var(--dark);
+    line-height: 1.6;
+    font-size: 1em; /* Base font size */
+}
+
+/* Quantity Selector */
+.quantity-selector {
+    margin-bottom: 0; /* Adjusted gap handled by flex parent */
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+}
+
+.quantity-selector label {
+    margin-right: 15px;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--secondary);
+    border-radius: 6px; /* Match general rounding */
+    overflow: hidden;
+    background-color: var(--white);
+}
+
+.quantity-btn {
+    background: none;
+    border: none;
+    padding: 10px 15px; /* Larger padding */
+    cursor: pointer;
+    font-size: 1.1em; /* Larger icon/text */
+    color: var(--primary);
+    transition: background-color 0.2s ease;
+}
+
+.quantity-btn:hover {
+    background-color: var(--secondary);
+}
+
+.quantity-control input[type="number"] {
+    width: 60px; /* Wider input */
+    text-align: center;
+    border: none;
+    font-size: 1em;
+    color: var(--dark);
+     padding: 10px 0; /* Align padding with buttons */
+    -moz-appearance: textfield; /* Hide arrows in Firefox */
+}
+
+.quantity-control input[type="number"]::-webkit-outer-spin-button,
+.quantity-control input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none; /* Hide arrows in Chrome, Safari, Edge */
+    margin: 0;
+}
+
+.product-actions {
+    display: flex;
+    gap: 20px; /* Increased gap */
+    margin-bottom: 0; /* Adjusted gap handled by flex parent */
+    flex-wrap: wrap; /* Allow buttons to wrap */
+}
+
+.add-to-cart-btn, .wishlist-btn {
+    padding: 14px 30px; /* Larger buttons */
+    border: none;
+    border-radius: 25px; /* More rounded */
+    cursor: pointer;
+    font-size: 1em; /* Base font size */
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* More space between icon and text */
+    text-decoration: none;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.add-to-cart-btn {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.add-to-cart-btn:hover {
+    background-color: var(--accent); /* Accent color on hover */
+     transform: translateY(-2px); /* Lift effect */
+     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Style for Out of Stock button */
+.add-to-cart-btn:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none; /* No lift */
+    box-shadow: none;
+}
+
+
+.wishlist-btn {
+    background-color: var(--secondary);
+    color: var(--primary);
+    border: 1px solid var(--secondary);
+}
+
+.wishlist-btn:hover {
+    background-color: #d0dae5; /* Slightly darker secondary */
+     transform: translateY(-2px); /* Lift effect */
+     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.wishlist-btn.active {
+    background-color: var(--accent); /* Accent for active */
+    color: var(--white);
+    border-color: var(--accent);
+    box-shadow: 0 4px 8px rgba(255, 133, 162, 0.4); /* Accent shadow */
+}
+/* Use solid heart for active state (FontAwesome specific) */
+.wishlist-btn.active i::before {
+       font-weight: 900; /* Use FontAwesome solid style */
+}
+
+
+/* --- Styles for Togglable Sections (INSIDE product-info, styled as containers) --- */
+.product-info .product-details-section {
+    /* border-top: 1px solid var(--secondary); Remove border top here */
+    padding-top: 0; /* Remove padding top here */
+    margin-top: 0; /* Gap handled by parent flex container */
+    background-color: var(--white);
+    border: 1px solid var(--secondary);
+    border-radius: 8px; /* Rounded corners for the container */
+    overflow: hidden; /* Hide overflowing content when collapsed */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.product-details-section .toggle-header {
+    font-size: 1.4em; /* Slightly larger header */
+    margin-bottom: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px; /* Padding inside the header */
+    user-select: none;
+    color: var(--primary); /* Primary color for header */
+    font-weight: 600;
+    background-color: var(--secondary); /* Subtle background for header */
+    border-bottom: 1px solid var(--secondary); /* Separator */
+    transition: background-color 0.2s ease;
+}
+
+.product-details-section .toggle-header:hover {
+     background-color: #d0dae5; /* Slightly darker secondary on hover */
+}
+
+.product-details-section .toggle-header .toggle-icon {
+    transition: transform 0.3s ease;
+    font-size: 0.8em; /* Smaller icon relative to text */
+    color: var(--dark); /* Icon color */
+}
+
+.product-details-section .toggle-header.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.product-details-section .toggle-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s ease-in-out, opacity 0.6s ease-in-out; /* Smooth transition */
+    opacity: 0;
+    padding: 0 20px; /* Horizontal padding */
+    color: var(--dark); /* Text color */
+    line-height: 1.6;
+    font-size: 1em;
+    background-color: var(--white); /* Content background */
+}
+
+.product-details-section .toggle-content.active {
+    max-height: 2000px; /* Increased max-height for potentially longer content */
+    opacity: 1;
+    padding: 20px; /* Padding when active */
+    overflow: visible; /* Allow content overflow once active */
+}
+
+.product-details-section .toggle-content p {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+
+/* --- Styles for Related Products Section --- */
+.related-products-section {
+    margin-top: 0; /* Gap handled by main container flex */
+    padding-top: 30px;
+    border-top: 1px solid var(--secondary);
+}
+
+.related-products-section h2 {
+    font-size: 2em; /* Larger heading */
+    margin-bottom: 25px;
+    text-align: center;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.related-products-section .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjusted min width */
+    gap: 30px; /* Consistent gap */
+}
+
+.related-products-section .product-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--secondary);
+    border-radius: 10px; /* Match main product card rounding */
+    background-color: var(--white);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+    overflow: hidden; /* For image scaling and border radius */
+    position: relative; /* For absolute positioning of actions */
+}
+
+.related-products-section .product-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+    transform: translateY(-8px); /* Lift higher */
+}
+
+.related-products-section .product-card-image-container {
+     position: relative; /* Container for image and overlaid actions */
+     overflow: hidden; /* Hide parts during hover scale transition */
+     border-top-left-radius: 10px; /* Match card border radius */
+     border-top-right-radius: 10px; /* Match card border radius */
+     /* Ensure the image container takes the necessary space */
+     width: 100%;
+     height: 200px; /* Fixed height for consistency */
+}
+
+.related-products-section .product-card-image-container img {
+    width: 100%;
+    height: 100%; /* Fill the container */
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth scale transition */
+    border-bottom: 1px solid var(--secondary); /* Separator below image */
+    border-radius: 0; /* Image itself doesn't need inner radius */
+}
+
+.related-products-section .product-card:hover .product-card-image-container img {
+    transform: scale(1.08); /* Scale image on card hover */
+}
+
+/* Optional: Styles for overlaid actions on related cards */
+.related-products-section .product-card-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+     opacity: 0; /* Initially hidden */
+     transition: opacity 0.3s ease;
+}
+.related-products-section .product-card:hover .product-card-actions {
+    opacity: 1; /* Show on card hover */
+}
+
+.related-products-section .product-card-actions span {
+     background-color: rgba(255, 255, 255, 0.85);
+     backdrop-filter: blur(2px);
+     border-radius: 50%;
+     width: 30px; /* Smaller icons */
+     height: 30px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     color: var(--primary);
+     font-size: 14px;
+     cursor: pointer;
+     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+     transition: all 0.2s ease;
+}
+.related-products-section .product-card-actions span:hover {
+     background-color: var(--primary);
+     color: var(--white);
+     transform: scale(1.15);
+}
+.related-products-section .product-card-actions .wishlist-icon.active {
+     background-color: var(--accent);
+     color: var(--white);
+}
+
+
+.related-products-section .product-card-info {
+    padding: 15px 15px 10px 15px; /* Padding inside the info section */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align text to the left */
+    width: 100%; /* Ensure info takes full width */
+}
+
+.related-products-section .product-card-info h4 {
+    font-size: 1.1em;
+    margin: 0 0 5px 0;
+    color: var(--primary);
+    font-weight: 600;
+     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%; /* Crucial for ellipsis */
+     text-align: left; /* Ensure title is left-aligned */
+}
+
+.related-products-section .product-card-description {
+    font-size: 0.85em;
+    color: var(--dark);
+    line-height: 1.4;
+    margin-bottom: 10px;
+    /* Limit description lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Show max 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: calc(1.4 * 0.85em * 2); /* Reserve space */
+    flex-grow: 1; /* Allow description to push price down */
+    width: 100%; /* Crucial for ellipsis */
+     text-align: left; /* Ensure description is left-aligned */
+}
+
+
+.related-products-section .product-card-info .price {
+    font-size: 1.2em; /* Slightly larger price */
+    font-weight: 700;
+    color: var(--primary); /* Primary color for price */
+    margin-top: auto; /* Push price to bottom */
+    align-self: flex-end; /* Align price to the bottom right */
+}
+
+
+/* --- Styles for Virtual Comments Section --- */
+.customer-reviews-section {
+    margin-top: 0; /* Gap handled by main container flex */
+    padding-top: 30px;
+    border-top: 1px solid var(--secondary);
+}
+
+.customer-reviews-section h2 {
+    font-size: 2em;
+    margin-bottom: 25px;
+    text-align: center;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review {
+    border: 1px solid var(--secondary);
+    border-radius: 10px; /* Match general rounding */
+    padding: 20px;
+    background-color: var(--white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px; /* More space below header */
+    gap: 15px; /* Increased gap */
+}
+
+.reviewer-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Make avatar round */
+    object-fit: cover;
+    border: 2px solid var(--secondary); /* Subtle border */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.reviewer-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Allow info to take space */
+}
+
+.reviewer-name {
+    font-weight: 700; /* Bolder name */
+    color: var(--primary);
+    margin-bottom: 5px;
+    font-size: 1em;
+}
+
+.rating {
+    color: #ffc107; /* Standard gold for stars */
+    font-size: 1em; /* Standard size */
+}
+
+.rating .far.fa-star {
+    color: #ccc; /* Unfilled star color */
+}
+
+.review-text {
+    margin-bottom: 15px; /* More space below text */
+    color: var(--dark);
+    line-height: 1.6;
+    font-size: 1em;
+}
+
+.review-date {
+    font-size: 0.9em; /* Slightly smaller date */
+    color: #888;
+    text-align: right;
+    display: block;
+}
+
+/* --- Responsive Adjustments --- */
+
+@media (max-width: 992px) {
+     .product-top-section {
+        gap: 30px;
+        padding: 25px;
+     }
+     .product-gallery,
+     .product-info {
+         flex-basis: 100%; /* Take full width */
+         max-width: none; /* Remove max-width restriction */
+     }
+
+     .product-info {
+         gap: 15px; /* Adjust gap inside product-info */
+     }
+
+     .product-gallery {
+         align-items: stretch; /* Stretch image and thumbnails to full width */
+     }
+     .main-image {
+        max-width: 100%; /* Ensure main image is responsive */
+     }
+     .thumbnail-container {
+        justify-content: center; /* Center thumbnails if they don't fill width */
+     }
+
+     .product-title { font-size: 2em; }
+     .product-meta { font-size: 1.1em; gap: 20px; }
+     .price { font-size: 1.6em; }
+     .stock-status { font-size: 0.85em; }
+     .product-description { font-size: 1em; }
+
+     .product-info .product-details-section {
+         padding-top: 0; /* Padding handled within section */
+     }
+     .product-details-section .toggle-header { padding: 12px 15px; }
+     .product-details-section .toggle-content { padding: 15px; }
+     .product-details-section .toggle-content.active { padding: 15px; }
+
+
+     .related-products-section .products-grid {
+         grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Adjust grid for smaller screens */
+         gap: 20px;
+     }
+     .related-products-section h2,
+     .customer-reviews-section h2 {
+         font-size: 1.8em;
+     }
+     .related-products-section .product-card-image-container { height: 160px; } /* Adjust image height */
+     .related-products-section .product-card-info { padding: 12px; }
+     .related-products-section .product-card-description { font-size: 0.8em; min-height: calc(1.4 * 0.8em * 2); }
+
+
+}
+
+
+@media (max-width: 768px) {
+    .product-detail-container {
+        margin: 15px auto;
+        padding: 0 10px;
+        gap: 30px;
+    }
+    .product-top-section {
+        flex-direction: column; /* Stack image and info vertically */
+        padding: 20px;
+        gap: 20px; /* Adjust gap in stacked view */
+    }
+
+     .product-info {
+         gap: 15px; /* Adjust gap inside product-info */
+     }
+
+    .product-actions {
+        flex-direction: column; /* Stack buttons */
+        gap: 10px;
+    }
+
+    .add-to-cart-btn, .wishlist-btn {
+        width: 100%; /* Full width buttons */
+    }
+
+     .product-title { font-size: 1.8em; }
+     .product-meta { font-size: 1em; gap: 15px; }
+     .price { font-size: 1.4em; }
+     .stock-status { font-size: 0.8em; }
+     .product-description { font-size: 0.95em; }
+
+     .product-details-section .toggle-header { font-size: 1.2em; padding: 10px 15px; }
+     .product-details-section .toggle-content { font-size: 0.9em; padding: 10px 15px;}
+      .product-details-section .toggle-content.active { padding: 10px 15px;}
+
+
+     .related-products-section h2,
+     .customer-reviews-section h2 {
+         font-size: 1.6em;
+         margin-bottom: 20px;
+     }
+
+     .related-products-section .products-grid {
+         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Further adjust grid */
+         gap: 15px;
+     }
+     .related-products-section .product-card-image-container { height: 120px; } /* Adjust image height */
+     .related-products-section .product-card-info { padding: 10px; }
+     .related-products-section .product-card-description { font-size: 0.75em; min-height: calc(1.4 * 0.75em * 2); }
+     .related-products-section .product-card-info h4 { font-size: 1em; }
+     .related-products-section .product-card-info .price { font-size: 1.1em; }
+
+
+     .review { padding: 15px; }
+     .review-header { gap: 10px; margin-bottom: 10px; }
+     .reviewer-avatar { width: 40px; height: 40px; }
+     .reviewer-name { font-size: 0.95em; }
+     .rating { font-size: 0.9em; }
+     .review-text { font-size: 0.95em; margin-bottom: 10px; }
+     .review-date { font-size: 0.85em; }
+}
+
+@media (max-width: 480px) {
+    .product-detail-container {
+        gap: 25px;
+    }
+    .product-top-section {
+        padding: 15px;
+        gap: 15px; /* Adjust gap */
+    }
+     .product-info {
+         gap: 10px; /* Adjust gap inside product-info */
+     }
+
+     .product-title { font-size: 1.6em; }
+     .product-meta { font-size: 0.9em; gap: 10px; flex-direction: column; align-items: flex-start; border-bottom: none; padding-bottom: 0;} /* Stack price and stock */
+     .price { font-size: 1.3em; margin-bottom: 5px; }
+     .stock-status { font-size: 0.9em; } /* Reset relative size */
+     .product-description { font-size: 0.9em; margin-bottom: 0; } /* Gap handled by parent */
+
+    .quantity-selector { font-size: 0.9em; }
+    .quantity-selector label { margin-right: 10px; }
+    .quantity-control input[type="number"] { width: 40px; font-size: 0.9em; padding: 8px 0; }
+    .quantity-btn { padding: 8px 12px; font-size: 1em; }
+
+
+    .add-to-cart-btn, .wishlist-btn {
+        padding: 12px 20px;
+        font-size: 0.9em;
+        gap: 8px;
+    }
+
+     .product-info .product-details-section {
+        padding-top: 0; /* Padding handled inside */
+     }
+      .product-details-section .toggle-header { font-size: 1.1em; padding: 8px 12px;}
+     .product-details-section .toggle-content { font-size: 0.9em; padding: 8px 12px;}
+      .product-details-section .toggle-content.active { padding: 8px 12px;}
+
+
+     .related-products-section h2,
+     .customer-reviews-section h2 {
+         font-size: 1.4em;
+         margin-bottom: 15px;
+     }
+
+     .related-products-section .products-grid {
+         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Smallest grid items */
+         gap: 10px;
+     }
+     .related-products-section .product-card-image-container { height: 100px; } /* Adjust image height */
+     .related-products-section .product-card-info { padding: 8px; }
+     .related-products-section .product-card-description { display: none; } /* Hide description */
+     .related-products-section .product-card-info h4 { font-size: 0.95em; margin-bottom: 0;}
+     .related-products-section .product-card-info .price { font-size: 1em; margin-top: 5px;}
+
+
+     .review { padding: 12px; }
+     .review-header { gap: 8px; margin-bottom: 8px; }
+     .reviewer-avatar { width: 35px; height: 35px; }
+     .reviewer-name { font-size: 0.9em; }
+     .rating { font-size: 0.8em; }
+     .review-text { font-size: 0.9em; margin-bottom: 8px; }
+     .review-date { font-size: 0.85em; }
+
+}
