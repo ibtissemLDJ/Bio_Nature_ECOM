@@ -1,0 +1,322 @@
+/* General body styling */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Combined fonts */
+  background-color: #f8f8f8; /* Soft background */
+  color: #333; /* Dark grey for main text */
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Basic Message Styling (can be moved to main-styles.css) */
+.message {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  opacity: 0.95; /* Slightly transparent */
+  font-size: 0.95em;
+}
+
+.success {
+  background-color: #d4edda; /* Light green */
+  color: #155724; /* Dark green */
+  border: 1px solid #c3e6cb;
+}
+
+.warning {
+  background-color: #fff3cd; /* Light yellow */
+  color: #856404; /* Dark yellow */
+  border: 1px solid #ffeeba;
+}
+
+.error {
+  background-color: #f8d7da; /* Light red */
+  color: #721c24; /* Dark red */
+  border: 1px solid #f5c6cb;
+}
+
+/* --- Modern Profile Container Styling --- */
+.profile-container {
+  max-width: 800px; /* Max width */
+  margin: 20px auto; /* Center block element */
+  background-color: #fff; /* White background */
+  padding: 30px;
+  border-radius: 10px; /* Slightly more rounded corners */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Softer, larger shadow */
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* Space between main sections */
+}
+
+/* Profile Header Section (Picture and Basic Info) */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 25px; /* Increased space */
+  border-bottom: 1px solid #eee;
+  padding-bottom: 25px; /* Increased padding */
+}
+
+.profile-picture-container {
+  width: 120px; /* Slightly larger picture */
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #ffb6c1; /* Lighter pink border */
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Shadow for the picture */
+}
+
+.profile-picture-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-basic-info {
+  flex-grow: 1;
+}
+
+.profile-basic-info h2 {
+  margin: 0 0 8px 0; /* More space below name */
+  color: #333;
+  font-size: 1.8em; /* Larger font size */
+  font-weight: 600;
+}
+
+.profile-basic-info p {
+  margin: 0 0 5px 0;
+  color: #555;
+  font-size: 1em;
+}
+
+/* Individual Profile Sections */
+.profile-section {
+  margin-top: 0; /* Gap is handled by .profile-container gap */
+}
+
+.profile-section h3 {
+  border-bottom: 2px solid #ff69b4; /* Pink accent color */
+  padding-bottom: 12px; /* More padding */
+  margin-bottom: 20px;
+  color: #ff69b4; /* Pink accent color */
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+/* Order History List */
+.order-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.order-item {
+  background-color: #fefefe; /* Slightly lighter background than f9f9f9 */
+  border: 1px solid #eee;
+  border-left: 5px solid #007bff; /* Blue accent bar */
+  border-radius: 5px;
+  padding: 15px 20px; /* Adjusted padding */
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px; /* Increased gap */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.order-item:hover {
+  transform: translateY(-3px); /* Slight lift on hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.order-item-info {
+  flex-grow: 1;
+  font-size: 0.95em;
+}
+
+.order-item-info strong {
+  color: #333;
+  font-size: 1.1em;
+}
+
+/* Order Status Badges */
+.order-status {
+  font-weight: bold;
+  padding: 6px 12px; /* More padding */
+  border-radius: 20px; /* Pill shape */
+  font-size: 0.85em;
+  text-transform: uppercase;
+  text-align: center;
+  min-width: 80px; /* Give statuses a minimum width */
+}
+
+.status-Pending { background-color: #ffc107; color: #333; } /* Warning color */
+.status-Processing { background-color: #17a2b8; color: #fff; } /* Info color */
+.status-Shipped { background-color: #007bff; color: #fff; } /* Blue (Primary) */
+.status-Delivered { background-color: #28a745; color: #fff; } /* Green (Success) */
+.status-Cancelled { background-color: #dc3545; color: #fff; } /* Red (Danger) */
+
+
+/* Action Buttons (e.g., View Details) */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.action-buttons .btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  display: inline-block; /* Make anchors behave like buttons */
+  text-align: center;
+}
+
+/* Style the "View Details" button using the primary blue */
+.action-buttons .btn-primary {
+  background-color: #007bff; /* Blue */
+  color: white;
+}
+
+.action-buttons .btn-primary:hover {
+  background-color: #0056b3; /* Darker blue */
+}
+
+/* Logout button */
+.logout-button {
+  background-color: #dc3545; /* Red (Danger) */
+  color: white;
+  padding: 12px 25px; /* Larger padding */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em; /* Larger font */
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+  align-self: center; /* Center the button */
+  display: block; /* Make it a block element */
+  width: auto; /* Adjust width */
+}
+
+.logout-button:hover {
+  background-color: #c82333; /* Darker red */
+}
+
+/* Link back to products */
+.profile-container > p {
+  margin-top: 25px; /* More space */
+  text-align: center;
+  font-size: 1em;
+}
+
+.profile-container > p a {
+  color: #007bff; /* Blue link color */
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.profile-container > p a:hover {
+  text-decoration: underline;
+  color: #0056b3; /* Darker blue on hover */
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) { /* Adjusted breakpoint slightly */
+  .profile-container {
+      padding: 20px;
+      margin: 15px;
+  }
+  .profile-header {
+      flex-direction: column;
+      text-align: center;
+      gap: 15px;
+      padding-bottom: 15px;
+  }
+   .profile-picture-container {
+       width: 100px;
+       height: 100px;
+   }
+   .profile-basic-info {
+       text-align: center;
+   }
+  .profile-basic-info h2 {
+      font-size: 1.5em;
+  }
+  .profile-section h3 {
+       font-size: 1.3em;
+       padding-bottom: 8px;
+       margin-bottom: 15px;
+  }
+
+  .order-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+  }
+
+   .order-item-info {
+       width: 100%; /* Allow info to take full width in column layout */
+   }
+
+  .action-buttons {
+      width: 100%;
+      justify-content: center;
+      gap: 10px;
+  }
+
+  .action-buttons .btn {
+      flex-grow: 1; /* Allow buttons to grow */
+      text-align: center;
+  }
+
+  .logout-button {
+      width: auto; /* Let button size naturally */
+      padding: 10px 20px;
+      font-size: 1em;
+  }
+}
+
+@media (max-width: 480px) { /* Smaller mobile adjustments */
+   .profile-container {
+       padding: 15px;
+   }
+   .profile-picture-container {
+       width: 80px;
+       height: 80px;
+   }
+    .profile-basic-info h2 {
+       font-size: 1.3em;
+   }
+   .profile-basic-info p {
+       font-size: 0.9em;
+   }
+   .profile-section h3 {
+       font-size: 1.2em;
+   }
+   .order-item {
+       padding: 10px 15px;
+       gap: 8px;
+   }
+    .order-item-info strong {
+       font-size: 1em;
+   }
+    .order-status {
+       font-size: 0.8em;
+       padding: 4px 8px;
+       min-width: 70px;
+    }
+    .action-buttons .btn {
+       font-size: 0.85em;
+       padding: 6px 12px;
+    }
+     .logout-button {
+       font-size: 0.9em;
+        padding: 8px 15px;
+   }
+}

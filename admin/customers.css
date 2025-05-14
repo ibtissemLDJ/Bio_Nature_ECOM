@@ -1,0 +1,720 @@
+/* customers.css - Nescale Admin Customers Page */
+
+:root {
+    --primary: #0c2d57;
+    --secondary: #e6edf4;
+    --accent: #FF85A2;
+    --dark: #3A3A3A;
+    --light: #F8F9FA;
+    --white: #FFFFFF;
+    --success: #4CAF50;
+    --warning: #FF9800;
+    --danger: #F44336;
+    --info: #2196F3;
+}
+
+/* Base Styles - Adopted from categories.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
+    color: var(--dark);
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+/* Content Box Styles - Consistent with categories.css */
+.content-box {
+    background-color: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+    margin-bottom: 30px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.content-box:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.content-box-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--secondary);
+    background-color: var(--white);
+}
+
+.content-box-title {
+    font-size: 1.3rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin: 0;
+}
+
+.content-box-body {
+    padding: 20px;
+}
+
+/* Alert Styles - Consistent with categories.css */
+.alert {
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-success {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--success);
+    border-left: 4px solid var(--success);
+}
+
+.alert-danger {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: var(--danger);
+    border-left: 4px solid var(--danger);
+}
+
+.alert i {
+    font-size: 1.2rem;
+}
+
+/* Table Styles - Consistent with categories.css */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.admin-table th {
+    background-color: var(--secondary);
+    color: var(--primary);
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary);
+}
+
+.admin-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--secondary);
+    vertical-align: middle;
+}
+
+.admin-table tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table tr:hover td {
+    background-color: rgba(12, 45, 87, 0.03);
+}
+
+/* Status Badges - Specific to Customers page */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.status-badge.active {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--success);
+}
+
+.status-badge.inactive {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: var(--warning);
+}
+
+.status-badge.banned {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: var(--danger);
+}
+
+/* Action Buttons - Consistent with categories.css and expanded for customer actions */
+.table-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: #0a254a;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-success {
+    background-color: var(--success);
+    color: var(--white);
+}
+
+.btn-success:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-warning {
+    background-color: var(--warning);
+    color: var(--white);
+}
+
+.btn-warning:hover {
+    background-color: #e68a00;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+
+.btn-danger {
+    background-color: var(--danger);
+    color: var(--white);
+}
+
+.btn-danger:hover {
+    background-color: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+    color: var(--dark);
+}
+
+.btn-secondary:hover {
+    background-color: #d8e1eb;
+}
+
+/* Customer View Modal Styles - Based on modal styles in categories.css but specific classes */
+.customer-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.customer-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.customer-modal-container {
+    background-color: var(--white);
+    border-radius: 10px;
+    width: 100%;
+    /* Slightly wider modal for customer details */
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    /* Added border for consistency */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.customer-modal.active .customer-modal-container {
+    transform: translateY(0);
+}
+
+.customer-modal-header {
+    padding: 18px 25px;
+    border-bottom: 1px solid var(--secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--white);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.customer-modal-title {
+    font-size: 1.3rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin: 0;
+}
+
+.customer-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--dark);
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    line-height: 1;
+    padding: 0 5px;
+}
+
+.customer-modal-close:hover {
+    opacity: 1;
+    color: var(--primary);
+}
+
+.customer-modal-body {
+    padding: 25px;
+    background-color: var(--white);
+}
+
+/* Customer Details Grid - Specific to Customers page */
+.customer-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.customer-detail-group {
+    margin-bottom: 0; /* Adjusted to rely on grid gap */
+}
+
+.customer-detail-label {
+    font-size: 0.9rem;
+    color: var(--dark);
+    opacity: 0.7;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.customer-detail-value {
+    font-size: 1rem;
+    color: var(--primary);
+    font-weight: 500;
+    padding: 8px 12px;
+    background-color: var(--secondary);
+    border-radius: 6px;
+    word-break: break-word; /* Prevent long text overflow */
+}
+
+/* Customer Orders History - Specific to Customers page */
+.customer-orders {
+    margin-top: 30px;
+    padding-top: 20px; /* Added padding top for separation */
+    border-top: 1px solid var(--secondary); /* Added border top for separation */
+}
+
+.customer-orders h4 {
+    font-size: 1.2rem;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.order-item {
+    padding: 15px;
+    border: 1px solid var(--secondary);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    background-color: var(--light); /* Slightly different background for clarity */
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Align items vertically */
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.order-header strong {
+    color: var(--primary);
+}
+
+.order-status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px; /* Slightly smaller font size */
+    font-weight: 600; /* Slightly bolder font weight */
+}
+
+.status-completed {
+    background-color: rgba(76, 175, 80, 0.15); /* Slightly darker background */
+    color: var(--success);
+}
+
+.status-pending {
+    background-color: rgba(255, 152, 0, 0.15); /* Slightly darker background */
+    color: var(--warning);
+}
+
+.status-cancelled {
+    background-color: rgba(244, 67, 54, 0.15); /* Slightly darker background */
+    color: var(--danger);
+}
+
+.order-total {
+    font-size: 0.95rem;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.order-total strong {
+     color: var(--primary);
+}
+
+
+.order-products {
+    margin-top: 10px;
+    border-top: 1px dashed var(--secondary); /* Added border top for separation */
+    padding-top: 10px; /* Added padding top */
+}
+
+.product-item {
+    display: flex;
+    gap: 15px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--secondary);
+    align-items: center; /* Align items vertically */
+}
+
+.product-item:last-child {
+    border-bottom: none;
+}
+
+.product-image {
+    width: 50px; /* Slightly smaller image */
+    height: 50px; /* Slightly smaller image */
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0; /* Prevent image from shrinking */
+}
+
+.product-info {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.product-info div {
+    margin-bottom: 3px;
+}
+
+.product-info div:last-child {
+    margin-bottom: 0;
+}
+
+.customer-modal-footer {
+    padding: 15px 25px;
+    border-top: 1px solid var(--secondary);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background-color: var(--white);
+    position: sticky;
+    bottom: 0;
+    z-index: 10; /* Ensure footer is above content when scrolling */
+}
+
+.no-orders {
+    text-align: center;
+    color: var(--dark);
+    opacity: 0.8;
+    padding: 20px;
+}
+
+/* Responsive Styles - Harmonized and adjusted for customer page */
+@media (max-width: 992px) {
+    .admin-table {
+        display: block;
+        overflow-x: auto;
+        width: 100%; /* Ensure table takes full width */
+    }
+
+    .admin-table thead {
+        display: block;
+    }
+
+    .admin-table tbody {
+        display: block;
+    }
+
+     .admin-table tr {
+        display: table-row; /* Keep rows as table rows */
+    }
+
+    .admin-table th,
+    .admin-table td {
+        white-space: nowrap;
+        padding: 10px 12px; /* Adjusted padding */
+    }
+
+    .admin-table th {
+        /* Optional: Style for sticky headers if needed, requires JS */
+        /* position: sticky;
+        top: 0; */
+        background-color: var(--secondary);
+        z-index: 1;
+    }
+}
+
+
+@media (max-width: 768px) {
+    body {
+        font-size: 13px; /* Slightly smaller base font */
+    }
+
+    .content-box-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 15px; /* Adjusted padding */
+    }
+
+    .content-box-body {
+         padding: 15px; /* Adjusted padding */
+    }
+
+    .content-box-title {
+        font-size: 1.2rem; /* Slightly smaller title */
+    }
+
+
+    .alert {
+        padding: 10px 15px; /* Adjusted padding */
+        font-size: 13px;
+        gap: 8px;
+    }
+
+    .alert i {
+        font-size: 1.1rem;
+    }
+
+    .table-actions {
+        flex-wrap: wrap;
+        gap: 6px; /* Slightly smaller gap */
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .customer-details-grid {
+        grid-template-columns: 1fr; /* Stack details on smaller screens */
+        gap: 15px; /* Adjusted gap */
+    }
+
+    .customer-detail-label {
+        font-size: 0.85rem;
+    }
+
+    .customer-detail-value {
+         font-size: 0.95rem;
+         padding: 6px 10px;
+    }
+
+
+    .customer-modal-container {
+        max-width: 95%;
+    }
+
+    .customer-modal-header,
+    .customer-modal-body,
+    .customer-modal-footer {
+        padding: 15px; /* Adjusted padding */
+    }
+
+    .customer-modal-title {
+        font-size: 1.2rem;
+    }
+
+    .customer-orders {
+        margin-top: 20px; /* Adjusted margin */
+        padding-top: 15px; /* Adjusted padding */
+    }
+
+     .customer-orders h4 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+
+    .order-item {
+        padding: 12px; /* Adjusted padding */
+        margin-bottom: 12px; /* Adjusted margin */
+    }
+
+    .order-header {
+        flex-direction: column; /* Stack order header elements */
+        align-items: flex-start;
+        gap: 5px;
+        margin-bottom: 8px;
+         font-size: 0.9rem;
+    }
+
+    .order-status {
+        font-size: 10px; /* Smaller status badge font */
+        padding: 3px 6px; /* Smaller status badge padding */
+    }
+
+    .order-total {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .product-item {
+        gap: 10px; /* Adjusted gap */
+        padding: 8px 0; /* Adjusted padding */
+    }
+
+    .product-image {
+        width: 40px; /* Even smaller image */
+        height: 40px; /* Even smaller image */
+    }
+
+    .product-info {
+         font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 12px; /* Smallest base font */
+    }
+
+     .content-box-header,
+     .content-box-body,
+     .customer-modal-header,
+     .customer-modal-body,
+     .customer-modal-footer {
+         padding: 12px; /* Further adjusted padding */
+     }
+
+
+    .content-box-title {
+        font-size: 1rem; /* Smallest title size */
+    }
+
+    .alert {
+        padding: 8px 12px; /* Further adjusted padding */
+        font-size: 12px;
+        gap: 6px;
+    }
+
+     .alert i {
+        font-size: 1rem;
+    }
+
+    .btn {
+        padding: 6px 10px; /* Further adjusted padding */
+        font-size: 11px;
+        gap: 4px;
+    }
+
+    .btn-sm {
+        padding: 5px 8px;
+        font-size: 10px;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+
+    .status-badge {
+        font-size: 10px;
+        padding: 2px 5px;
+    }
+
+     .customer-modal-title {
+        font-size: 1.1rem;
+    }
+
+     .customer-detail-label {
+        font-size: 0.8rem;
+    }
+
+    .customer-detail-value {
+         font-size: 0.9rem;
+         padding: 5px 8px;
+    }
+
+    .customer-orders h4 {
+        font-size: 1rem;
+    }
+
+    .order-item {
+        padding: 10px; /* Further adjusted padding */
+        margin-bottom: 10px; /* Further adjusted margin */
+    }
+
+     .order-header {
+         font-size: 0.85rem;
+     }
+
+    .order-total {
+        font-size: 0.85rem;
+    }
+
+    .product-item {
+        gap: 8px; /* Further adjusted gap */
+        padding: 6px 0; /* Further adjusted padding */
+    }
+
+    .product-image {
+        width: 35px; /* Even smaller image */
+        height: 35px; /* Even smaller image */
+    }
+
+     .product-info {
+         font-size: 0.8rem;
+     }
+}
+
+
+/* Animations - Consistent with categories.css */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease forwards;
+}

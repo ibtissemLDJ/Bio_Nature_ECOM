@@ -16,53 +16,60 @@ $recentOrders = $conn->query("
     JOIN users u ON o.user_id = u.user_id
     ORDER BY o.order_date DESC LIMIT 5
 ");
+
+// Calculate percentage changes (example values - replace with your actual calculations)
+$ordersChange = 12.5; // Example: 12.5% increase
+$productsChange = -3.2; // Example: 3.2% decrease
+$customersChange = 8.7; // Example: 8.7% increase
+$pendingChange = 5.0; // Example: 5.0% increase
 ?>
-
-<div class="row">
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-primary h-100">
-            <div class="card-body">
-                <h5 class="card-title">Total Orders</h5>
-                <h2 class="card-text"><?= $totalOrders ?></h2>
+<link rel="stylesheet" href="dashboard.css">
+<div class="dashboard-container">
+    <div class="stats-grid">
+        <div class="stat-card primary">
+            <div class="stat-card-title">Total Orders</div>
+            <div class="stat-card-value"><?= number_format($totalOrders) ?></div>
+            <div class="stat-card-change <?= $ordersChange >= 0 ? 'positive' : 'negative' ?>">
+                <i class="bi bi-arrow-<?= $ordersChange >= 0 ? 'up' : 'down' ?>"></i>
+                <?= abs($ordersChange) ?>% <?= $ordersChange >= 0 ? 'increase' : 'decrease' ?>
+            </div>
+        </div>
+        
+        <div class="stat-card success">
+            <div class="stat-card-title">Total Products</div>
+            <div class="stat-card-value"><?= number_format($totalProducts) ?></div>
+            <div class="stat-card-change <?= $productsChange >= 0 ? 'positive' : 'negative' ?>">
+                <i class="bi bi-arrow-<?= $productsChange >= 0 ? 'up' : 'down' ?>"></i>
+                <?= abs($productsChange) ?>% <?= $productsChange >= 0 ? 'increase' : 'decrease' ?>
+            </div>
+        </div>
+        
+        <div class="stat-card info">
+            <div class="stat-card-title">Total Customers</div>
+            <div class="stat-card-value"><?= number_format($totalCustomers) ?></div>
+            <div class="stat-card-change <?= $customersChange >= 0 ? 'positive' : 'negative' ?>">
+                <i class="bi bi-arrow-<?= $customersChange >= 0 ? 'up' : 'down' ?>"></i>
+                <?= abs($customersChange) ?>% <?= $customersChange >= 0 ? 'increase' : 'decrease' ?>
+            </div>
+        </div>
+        
+        <div class="stat-card warning">
+            <div class="stat-card-title">Pending Orders</div>
+            <div class="stat-card-value"><?= number_format($pendingOrders) ?></div>
+            <div class="stat-card-change <?= $pendingChange >= 0 ? 'positive' : 'negative' ?>">
+                <i class="bi bi-arrow-<?= $pendingChange >= 0 ? 'up' : 'down' ?>"></i>
+                <?= abs($pendingChange) ?>% <?= $pendingChange >= 0 ? 'increase' : 'decrease' ?>
             </div>
         </div>
     </div>
     
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-success h-100">
-            <div class="card-body">
-                <h5 class="card-title">Total Products</h5>
-                <h2 class="card-text"><?= $totalProducts ?></h2>
-            </div>
+    <div class="content-box">
+        <div class="content-box-header">
+            <h2 class="content-box-title">Recent Orders</h2>
+            <a href="orders.php" class="btn btn-outline-primary">View All Orders</a>
         </div>
-    </div>
-    
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-info h-100">
-            <div class="card-body">
-                <h5 class="card-title">Total Customers</h5>
-                <h2 class="card-text"><?= $totalCustomers ?></h2>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-warning h-100">
-            <div class="card-body">
-                <h5 class="card-title">Pending Orders</h5>
-                <h2 class="card-text"><?= $pendingOrders ?></h2>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="card mt-4">
-    <div class="card-header">
-        <h5>Recent Orders</h5>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
+        <div class="content-box-body">
+            <table class="admin-table">
                 <thead>
                     <tr>
                         <th>Order ID</th>
@@ -81,16 +88,13 @@ $recentOrders = $conn->query("
                         <td><?= date('M d, Y', strtotime($order['order_date'])) ?></td>
                         <td>$<?= number_format($order['total_amount'], 2) ?></td>
                         <td>
-                            <span class="badge bg-<?= 
-                                $order['status'] === 'Delivered' ? 'success' : 
-                                ($order['status'] === 'Pending' ? 'warning' : 'primary') 
-                            ?>">
+                            <span class="status-badge <?= strtolower($order['status']) ?>">
                                 <?= $order['status'] ?>
                             </span>
                         </td>
                         <td>
                             <a href="orders.php?view=<?= $order['order_id'] ?>" class="btn btn-sm btn-outline-primary">
-                                View
+                                <i class="bi bi-eye"></i> View
                             </a>
                         </td>
                     </tr>

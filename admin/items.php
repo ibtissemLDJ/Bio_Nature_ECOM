@@ -171,11 +171,61 @@ $items = $conn->query("SELECT i.*, c.name as category_name FROM items i LEFT JOI
 // Get categories for dropdown
 $categories = $conn->query("SELECT * FROM categories");
 ?>
-
+<link rel="stylesheet" href="css/items.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Function to open edit modal with product data
+    $('.edit-btn').click(function() {
+        var itemId = $(this).data('id');
+        $('#editItemModal').modal('show');
+        
+        // Fetch product data via AJAX
+        $.ajax({
+            url: 'get_product.php',
+            type: 'GET',
+            data: {id: itemId},
+            dataType: 'json',
+            success: function(response) {
+                if(response.status == 'success') {
+                    // Populate form fields
+                    $('#editItemModal input[name="item_id"]').val(response.data.item_id);
+                    $('#editItemModal input[name="name"]').val(response.data.name);
+                    $('#editItemModal input[name="price"]').val(response.data.price);
+                    $('#editItemModal input[name="stock"]').val(response.data.stock);
+                    $('#editItemModal select[name="category_id"]').val(response.data.category_id);
+                    $('#editItemModal textarea[name="description"]').val(response.data.description);
+                    $('#editItemModal textarea[name="ingredients"]').val(response.data.ingredients);
+                    $('#editItemModal textarea[name="how_to_use"]').val(response.data.how_to_use);
+                    $('#editItemModal input[name="existing_image"]').val(response.data.image_url);
+                    
+                    // Display existing image if available
+                    if(response.data.image_url) {
+                        var imgSrc = (response.data.image_url.indexOf('http') === 0 || response.data.image_url.indexOf('images/') === 0) 
+                            ? response.data.image_url 
+                            : '../images/' + response.data.image_url.replace('images/', '');
+                        $('#editItemModal .image-preview').html(
+                            '<img src="' + imgSrc + '" class="img-thumbnail mb-2" style="max-height: 100px; max-width: 100px; object-fit: contain;">'
+                        );
+                    } else {
+                        $('#editItemModal .image-preview').html('');
+                    }
+                } else {
+                    alert('Error loading product data');
+                }
+            },
+            error: function() {
+                alert('Error communicating with server');
+            }
+        });
+    });
+});
+</script>
+<link rel="stylesheet" href="items.css">
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5>Products</h5>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
+        <button class="btn btn-primary" data-toggle="modal" data-target="#addItemModal">
             <i class="bi bi-plus"></i> Add Product
         </button>
     </div>
@@ -224,7 +274,7 @@ $categories = $conn->query("SELECT * FROM categories");
                         <td><?php echo $item['stock']; ?></td>
                         <td><?php echo $item['category_name'] ?? 'Uncategorized'; ?></td>
                         <td>
-                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editItemModal<?php echo $item['item_id']; ?>">
+                            <button class="btn btn-sm btn-warning edit-btn" data-id="<?php echo $item['item_id']; ?>">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
                             <a href="items.php?delete=<?php echo $item['item_id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
@@ -232,90 +282,6 @@ $categories = $conn->query("SELECT * FROM categories");
                             </a>
                         </td>
                     </tr>
-
-                    <!-- Edit Item Modal -->
-                    <div class="modal fade" id="editItemModal<?php echo $item['item_id']; ?>" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <form method="POST" enctype="multipart/form-data">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Edit Product</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <input type="hidden" name="item_id" value="<?php echo $item['item_id']; ?>">
-                                        <input type="hidden" name="existing_image" value="<?php echo $item['image_url']; ?>">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Product Name*</label>
-                                                    <input type="text" class="form-control" name="name" value="<?php echo htmlspecialchars($item['name']); ?>" required>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label">Price*</label>
-                                                    <input type="number" step="0.01" class="form-control" name="price" value="<?php echo $item['price']; ?>" required>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label">Stock Quantity*</label>
-                                                    <input type="number" class="form-control" name="stock" value="<?php echo $item['stock']; ?>" required>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label">Category</label>
-                                                    <select class="form-select" name="category_id">
-                                                        <option value="">-- Select Category --</option>
-                                                        <?php 
-                                                        $categories->data_seek(0);
-                                                        while ($cat = $categories->fetch_assoc()): ?>
-                                                            <option value="<?php echo $cat['category_id']; ?>" <?php echo ($cat['category_id'] == $item['category_id']) ? 'selected' : ''; ?>>
-                                                                <?php echo htmlspecialchars($cat['name']); ?>
-                                                            </option>
-                                                        <?php endwhile; ?>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Product Image</label>
-                                                    <?php if ($item['image_url']): ?>
-                                                        <?php
-                                                        $img_src = (strpos($item['image_url'], 'http') === 0 || strpos($item['image_url'], 'images/') === 0) 
-                                                            ? $item['image_url'] 
-                                                            : '../images/' . ltrim($item['image_url'], 'images/');
-                                                        ?>
-                                                        <img src="<?php echo $img_src; ?>" 
-                                                             class="img-thumbnail mb-2" 
-                                                             style="max-height: 100px; max-width: 100px; object-fit: contain;">
-                                                    <?php endif; ?>
-                                                    <input type="file" class="form-control" name="product_image" accept="image/*">
-                                                    <small class="text-muted">OR enter image path/URL:</small>
-                                                    <input type="text" class="form-control mt-2" 
-                                                           name="product_image_url" 
-                                                           placeholder="images/productX.png or https://example.com/image.jpg"
-                                                           value="<?php echo htmlspecialchars($item['image_url']); ?>">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label">Ingredients</label>
-                                                    <textarea class="form-control" name="ingredients" rows="2"><?php echo htmlspecialchars($item['ingredients']); ?></textarea>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label">How to Use</label>
-                                                    <textarea class="form-control" name="how_to_use" rows="2"><?php echo htmlspecialchars($item['how_to_use']); ?></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Description*</label>
-                                            <textarea class="form-control" name="description" rows="3" required><?php echo htmlspecialchars($item['description']); ?></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" name="update_item" class="btn btn-primary">Save Changes</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                     <?php endwhile; ?>
                 </tbody>
             </table>
@@ -324,32 +290,34 @@ $categories = $conn->query("SELECT * FROM categories");
 </div>
 
 <!-- Add Item Modal -->
-<div class="modal fade" id="addItemModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <form method="POST" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Product</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-3">
+                            <div class="form-group">
                                 <label class="form-label">Product Name*</label>
                                 <input type="text" class="form-control" name="name" required>
                             </div>
-                            <div class="mb-3">
+                            <div class="form-group">
                                 <label class="form-label">Price*</label>
                                 <input type="number" step="0.01" class="form-control" name="price" required>
                             </div>
-                            <div class="mb-3">
+                            <div class="form-group">
                                 <label class="form-label">Stock Quantity*</label>
                                 <input type="number" class="form-control" name="stock" required>
                             </div>
-                            <div class="mb-3">
+                            <div class="form-group">
                                 <label class="form-label">Category</label>
-                                <select class="form-select" name="category_id">
+                                <select class="form-control" name="category_id">
                                     <option value="">-- Select Category --</option>
                                     <?php 
                                     $categories->data_seek(0);
@@ -360,7 +328,7 @@ $categories = $conn->query("SELECT * FROM categories");
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
+                            <div class="form-group">
                                 <label class="form-label">Product Image</label>
                                 <input type="file" class="form-control" name="product_image" accept="image/*">
                                 <small class="text-muted">OR enter image path/URL:</small>
@@ -368,24 +336,98 @@ $categories = $conn->query("SELECT * FROM categories");
                                        name="product_image_url" 
                                        placeholder="images/productX.png or https://example.com/image.jpg">
                             </div>
-                            <div class="mb-3">
+                            <div class="form-group">
                                 <label class="form-label">Ingredients</label>
                                 <textarea class="form-control" name="ingredients" rows="2"></textarea>
                             </div>
-                            <div class="mb-3">
+                            <div class="form-group">
                                 <label class="form-label">How to Use</label>
                                 <textarea class="form-control" name="how_to_use" rows="2"></textarea>
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group">
                         <label class="form-label">Description*</label>
                         <textarea class="form-control" name="description" rows="3" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" name="add_item" class="btn btn-primary">Add Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Item Modal (Single modal for all edits) -->
+<div class="modal fade" id="editItemModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="item_id" value="">
+                <input type="hidden" name="existing_image" value="">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Product Name*</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Price*</label>
+                                <input type="number" step="0.01" class="form-control" name="price" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stock Quantity*</label>
+                                <input type="number" class="form-control" name="stock" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <select class="form-control" name="category_id">
+                                    <option value="">-- Select Category --</option>
+                                    <?php 
+                                    $categories->data_seek(0);
+                                    while ($cat = $categories->fetch_assoc()): ?>
+                                        <option value="<?php echo $cat['category_id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
+                                    <?php endwhile; ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Product Image</label>
+                                <div class="image-preview mb-2"></div>
+                                <input type="file" class="form-control" name="product_image" accept="image/*">
+                                <small class="text-muted">OR enter image path/URL:</small>
+                                <input type="text" class="form-control mt-2" 
+                                       name="product_image_url" 
+                                       placeholder="images/productX.png or https://example.com/image.jpg">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Ingredients</label>
+                                <textarea class="form-control" name="ingredients" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">How to Use</label>
+                                <textarea class="form-control" name="how_to_use" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description*</label>
+                        <textarea class="form-control" name="description" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" name="update_item" class="btn btn-primary">Save Changes</button>
                 </div>
             </form>
         </div>

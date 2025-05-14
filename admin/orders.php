@@ -46,7 +46,7 @@ if (isset($_GET['view'])) {
     ");
 }
 ?>
-
+<link rel="stylesheet" href="orders.css">
 <div class="card">
     <div class="card-header">
         <h5><?= isset($order) ? "Order #{$order['order_id']}" : 'Orders' ?></h5>

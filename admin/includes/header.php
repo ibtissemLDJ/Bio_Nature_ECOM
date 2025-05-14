@@ -15,7 +15,7 @@
             color: #333;
         }
         .sidebar .nav-link.active {
-            background-color: #0d6efd;
+            background-color: #0c2d57;
             color: white;
         }
         .main-content {
