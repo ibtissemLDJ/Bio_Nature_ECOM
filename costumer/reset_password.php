@@ -1,75 +1,51 @@
 <?php
 // No session_start() needed here usually, as password reset is often a standalone process
 // If you *do* need sessions (e.g., for temporary messages after redirect), add session_start();
-// session_start(); // Uncomment if needed for session messages/data
+session_start();
+require_once 'db_connection.php';
 
-// --- Database Connection ---
-$host = "localhost";
-$user = "root";
-$password_db = ""; // Use a different variable name than user's password
-$dbname = "nescare"; // Database name is 'nescare' as per your script
-$conn = new mysqli($host, $user, $password_db, $dbname);
+// Initialize message variables
+$message = "";
+$message_type = "";
+$email = "";
 
-// Check database connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Get email from GET parameter
+if (isset($_GET['email'])) {
+    $email = filter_var($_GET['email'], FILTER_SANITIZE_EMAIL);
 }
 
-// --- Variables for messages ---
-$message = "";
-
-// Get email from GET, sanitize it
-$email = isset($_GET['email']) ? htmlspecialchars(trim($_GET['email'])) : '';
-
-// --- Handle Password Reset Form Submission ---
-if (isset($_POST['reset_password'])) {
-    // Get and sanitize/trim the submitted email and passwords
-    $new_password = $_POST['new_password']; // Get the raw new password
+// Handle password reset form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
-    $reset_email = htmlspecialchars(trim($_POST['email'])); // Get email from hidden field, sanitize
-
-    if (empty($new_password) || empty($confirm_password)) {
-        $message = "Please enter and confirm your new password.";
-    } elseif ($new_password !== $confirm_password) {
+    
+    // Validate passwords
+    if (strlen($password) < 8) {
+        $message = "Password must be at least 8 characters long.";
+        $message_type = "error";
+    } elseif ($password !== $confirm_password) {
         $message = "Passwords do not match.";
+        $message_type = "error";
     } else {
-        // --- SECURITY VULNERABILITY WARNING ---
-        // *** IMPORTANT: In a real-world application, updating the password
-        // *** based ONLY on the email is a severe security risk.
-        // *** You MUST implement a proper password reset mechanism involving
-        // *** sending a unique, time-limited token to the user's email and
-        // *** verifying that token here before allowing the password change.
-        // --- END WARNING ---
-
-        // --- Hash the new password securely ---
-        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-
-        // Prepare the UPDATE statement
-        // Use correct table name 'users' and column name 'password_hash'
-        // The WHERE clause should ideally also check a valid reset token along with the email
-        $stmt = $conn->prepare("UPDATE users SET password_hash = ? WHERE email = ?");
+        // Hash the new password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        
+        // Update the user's password
+        $stmt = $conn->prepare("UPDATE users SET password = ? WHERE email = ?");
         if ($stmt) {
-            // Bind parameters: hashed_password (string), email (string)
-            $stmt->bind_param("ss", $hashed_password, $reset_email);
-
+            $stmt->bind_param("ss", $hashed_password, $email);
+            
             if ($stmt->execute()) {
-                // --- Password Reset Successful ---
-                // In a real app, invalidate the reset token here
-
-                $message = "Password has been reset successfully. You can now <a href='login.php'>login</a> with your new password.";
-                // Optionally redirect to login page after a delay or immediately
-                // header("Location: login.php"); exit();
-
+                $message = "Your password has been successfully reset. You can now login with your new password.";
+                $message_type = "success";
+                // Redirect to login page after 2 seconds
+                header("refresh:2;url=login.php");
             } else {
-                // Handle execution errors
-                $message = "Error updating password: " . $stmt->error; // Use $stmt->error for prepared statements
-                error_log("Password reset execute failed for email " . $reset_email . ": " . $stmt->error); // Log the error server-side
+                $message = "An error occurred while resetting your password. Please try again.";
+                $message_type = "error";
             }
-            $stmt->close(); // Close the update statement
-        } else {
-            // Handle preparation errors
-            $message = "Database error during password reset preparation.";
-            error_log("Password reset prepare failed: " . $conn->error); // Log the error server-side
+            $stmt->close();
         }
     }
 }
@@ -82,29 +58,127 @@ $conn->close();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Reset Password - Nescare</title> <link rel="stylesheet" href="reset_password.css">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password | Nescare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .reset-password-container {
+            max-width: 400px;
+            width: 100%;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .reset-password-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            opacity: 0.95;
+            font-size: 0.95em;
+            text-align: center;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        .reset-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #0c2d57;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background-color: #081e3d;
+        }
+
+        .login-link {
+            margin-top: 20px;
+            display: block;
+            color: #0c2d57;
+            text-decoration: none;
+        }
+
+        .login-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <div class="reset-password-container">
         <h2>Reset Your Password</h2>
+
         <?php if ($message): ?>
-            <p class="message"><?php echo $message; ?></p> <?php else: ?>
-            <p>Enter your new password below.</p>
+            <p class="message <?php echo $message_type; ?>"><?php echo htmlspecialchars($message); ?></p>
         <?php endif; ?>
+
         <form method="post">
+            <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
             <div class="form-group">
-                <label for="new_password">New Password:</label>
-                <input type="password" id="new_password" name="new_password" required>
+                <label for="password">New Password:</label>
+                <input type="password" id="password" name="password" required minlength="8">
             </div>
             <div class="form-group">
                 <label for="confirm_password">Confirm New Password:</label>
-                <input type="password" id="confirm_password" name="confirm_password" required>
+                <input type="password" id="confirm_password" name="confirm_password" required minlength="8">
             </div>
-            <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
-            <button type="submit" name="reset_password" class="reset-password-button">Reset Password</button>
+            <button type="submit" name="reset_password" class="reset-button">Reset Password</button>
         </form>
-        <p><a href="login.php">Back to Login</a></p>
+
+        <a href="login.php" class="login-link">Back to Login</a>
     </div>
 </body>
 </html>

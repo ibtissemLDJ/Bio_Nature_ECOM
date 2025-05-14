@@ -81,6 +81,24 @@ if ($stmt) {
     $stmt->close();
 }
 
+// Get user profile information for the header
+$profile_picture = "images/user1.png"; // Default profile picture
+$username = "";
+
+$stmt_user = $conn->prepare("SELECT profile_picture, username FROM users WHERE user_id = ?");
+if ($stmt_user) {
+    $stmt_user->bind_param("i", $user_id);
+    $stmt_user->execute();
+    $stmt_user->bind_result($profile_picture_db, $username_db);
+    if ($stmt_user->fetch()) {
+        $username = $username_db;
+        if (!empty($profile_picture_db)) {
+            $profile_picture = $profile_picture_db;
+        }
+    }
+    $stmt_user->close();
+}
+
 $conn->close();
 ?>
 

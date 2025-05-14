@@ -233,11 +233,8 @@ $(document).ready(function() {
                     
                     // Display existing image if available
                     if(response.data.image_url) {
-                        var imgSrc = (response.data.image_url.indexOf('http') === 0 || response.data.image_url.indexOf('images/') === 0) 
-                            ? response.data.image_url 
-                            : '../images/' + response.data.image_url.replace('images/', '');
                         $('#editItemModal .image-preview').html(
-                            '<img src="' + imgSrc + '" class="img-thumbnail mb-2" style="max-height: 100px; max-width: 100px; object-fit: contain;">'
+                            '<img src="' + response.data.image_url + '" class="img-thumbnail mb-2" style="max-height: 100px; max-width: 100px; object-fit: contain;">'
                         );
                     } else {
                         $('#editItemModal .image-preview').html('');
@@ -326,12 +323,7 @@ $(document).ready(function() {
                         <td><?php echo $item['item_id']; ?></td>
                         <td>
                             <?php if ($item['image_url']): ?>
-                                <?php
-                                $img_src = (strpos($item['image_url'], 'http') === 0 || strpos($item['image_url'], 'images/') === 0) 
-                                    ? $item['image_url'] 
-                                    : '../images/' . ltrim($item['image_url'], 'images/');
-                                ?>
-                                <img src="<?php echo $img_src; ?>" 
+                                <img src="<?php echo $item['image_url']; ?>" 
                                      alt="<?php echo htmlspecialchars($item['name']); ?>" 
                                      style="height: 50px; max-width: 80px; object-fit: contain;">
                             <?php endif; ?>
@@ -398,10 +390,10 @@ $(document).ready(function() {
                             <div class="form-group">
                                 <label class="form-label">Product Image</label>
                                 <input type="file" class="form-control" name="product_image" accept="image/*">
-                                <small class="text-muted">OR enter image path/URL:</small>
+                                <small class="text-muted">OR enter image path:</small>
                                 <input type="text" class="form-control mt-2" 
                                        name="product_image_url" 
-                                       placeholder="images/productX.png or https://example.com/image.jpg">
+                                       placeholder="Enter image path">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Ingredients</label>
@@ -472,10 +464,10 @@ $(document).ready(function() {
                                 <label class="form-label">Product Image</label>
                                 <div class="image-preview mb-2"></div>
                                 <input type="file" class="form-control" name="product_image" accept="image/*">
-                                <small class="text-muted">OR enter image path/URL:</small>
+                                <small class="text-muted">OR enter image path:</small>
                                 <input type="text" class="form-control mt-2" 
                                        name="product_image_url" 
-                                       placeholder="images/productX.png or https://example.com/image.jpg">
+                                       placeholder="Enter image path">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Ingredients</label>
