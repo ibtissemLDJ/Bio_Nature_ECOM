@@ -73,48 +73,7 @@ if ($featured_post) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="logo-container">
-            <a href="landing.php"><img src="images/logo.png" alt="Nescare Logo" class="logo" /></a>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="product.php">Shop</a></li>
-                <li><a href="product.php">About</a></li>
-                <li><a href="product.php">Ingredients</a></li>
-                <li><a href="blog.php" class="active">Blog</a></li>
-                <li><a href="footer.php">Contact</a></li>
-            </ul>
-        </nav>
-        <div class="nav-right">
-            <a href="wishlist.php" title="Wishlist"><i class="fas fa-heart"></i></a>
-            <a href="basket.php" title="Cart"><i class="fas fa-shopping-basket"></i></a>
-            <?php if (isset($_SESSION['user_id'])): ?>
-                <div class="profile-container">
-                    <a href="profile.php" title="Your Profile - <?php echo htmlspecialchars($username); ?>">
-                        <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="profile-pic">
-                    </a>
-                </div>
-            <?php else: ?>
-                <a href="login.php" class="login-btn">Login</a>
-            <?php endif; ?>
-        </div>
-        <?php
-        // Display session messages (success, warning, error)
-        if (isset($_SESSION['success_message'])): ?>
-            <div class="message success"><?php echo htmlspecialchars($_SESSION['success_message']); ?></div>
-            <?php unset($_SESSION['success_message']);
-        endif;
-        if (isset($_SESSION['warning_message'])): ?>
-            <div class="message warning"><?php echo htmlspecialchars($_SESSION['warning_message']); ?></div>
-            <?php unset($_SESSION['warning_message']);
-        endif;
-        if (isset($_SESSION['error_message'])): ?>
-            <div class="message error"><?php echo htmlspecialchars($_SESSION['error_message']); ?></div>
-            <?php unset($_SESSION['error_message']);
-        endif;
-        ?>
-    </header>
+    <?php require_once 'header.php'; ?>
 
     <main class="container">
         <!-- Blog Header -->

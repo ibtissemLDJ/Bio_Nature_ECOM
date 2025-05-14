@@ -156,6 +156,8 @@
   }
   
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="notifications.css">
 </head>
 <body>
 <header>
@@ -165,41 +167,82 @@
         <nav>
              <ul>
                  <li><a href="product.php" class="active">Shop</a></li>
-                 <li><a href="product.php">About</a></li>
-                 <li><a href="product.php">Ingredients</a></li>
+                 <li><a href="landing.php#about-section">About</a></li>
                  <li><a href="blog.php">Blog</a></li>
-                 <li><a href="footer.php">Contact</a></li>
+                 <li><a href="#contact-section">Contact</a></li>
              </ul>
         </nav>
         <div class="nav-right">
-              <a href="wishlist.php" title="Wishlist"><i class="fas fa-heart"></i></a>
-              <a href="basket.php" title="Cart"><i class="fas fa-shopping-basket"></i></a>
-             <?php if (isset($_SESSION['user_id'])): ?>
-                  <div class="profile-container-small"> <a href="profile.php" title="Your Profile - <?php echo htmlspecialchars($username); ?>">
+              <?php if (isset($_SESSION['user_id'])): ?>
+                  <a href="wishlist.php" title="Wishlist"><i class="fas fa-heart"></i></a>
+                  <a href="basket.php" title="Cart"><i class="fas fa-shopping-basket"></i></a>
+                  <div class="profile-container-small">
+                      <a href="profile.php" title="Your Profile - <?php echo htmlspecialchars($username); ?>">
                           <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="profile-pic">
                       </a>
                   </div>
-             <?php else: ?>
+              <?php else: ?>
+                  <a href="login.php?redirect=wishlist.php" title="Login to view wishlist"><i class="fas fa-heart"></i></a>
+                  <a href="login.php?redirect=basket.php" title="Login to view cart"><i class="fas fa-shopping-basket"></i></a>
                   <a href="login.php" class="login-btn">Login</a>
-             <?php endif; ?>
-         </div>
-         <?php
-         // Display session messages (success, warning, error)
-         // You might want to place this outside the fixed header if header is fixed
-         if (isset($_SESSION['success_message'])): ?>
-             <div class="message success"><?php echo htmlspecialchars($_SESSION['success_message']); ?></div>
-             <?php unset($_SESSION['success_message']);
-         endif;
-         if (isset($_SESSION['warning_message'])): ?>
-             <div class="message warning"><?php echo htmlspecialchars($_SESSION['warning_message']); ?></div>
-             <?php unset($_SESSION['warning_message']);
-         endif;
-         if (isset($_SESSION['error_message'])): ?>
-             <div class="message error"><?php echo htmlspecialchars($_SESSION['error_message']); ?></div>
-             <?php unset($_SESSION['error_message']);
-         endif;
-         ?>
-    </header>
+              <?php endif; ?>
+        </div>
+</header>
+
+<?php
+// Display session messages (success, warning, error)
+if (isset($_SESSION['success_message'])): ?>
+    <div class="notification success">
+        <?php echo htmlspecialchars($_SESSION['success_message']); ?>
+        <span class="close-btn">&times;</span>
+    </div>
+    <?php unset($_SESSION['success_message']);
+endif;
+if (isset($_SESSION['warning_message'])): ?>
+    <div class="notification warning">
+        <?php echo htmlspecialchars($_SESSION['warning_message']); ?>
+        <span class="close-btn">&times;</span>
+    </div>
+    <?php unset($_SESSION['warning_message']);
+endif;
+if (isset($_SESSION['error_message'])): ?>
+    <div class="notification error">
+        <?php echo htmlspecialchars($_SESSION['error_message']); ?>
+        <span class="close-btn">&times;</span>
+    </div>
+    <?php unset($_SESSION['error_message']);
+endif;
+?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle notification dismissal
+    const notifications = document.querySelectorAll('.notification');
+    
+    notifications.forEach(notification => {
+        const closeBtn = notification.querySelector('.close-btn');
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                notification.classList.add('hide');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300); // Match this with the animation duration
+            });
+        }
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            if (notification && !notification.classList.contains('hide')) {
+                notification.classList.add('hide');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }
+        }, 5000);
+    });
+});
+</script>
 </body>
 </html>
   

@@ -133,7 +133,8 @@ function isProductInWishlist($item_id, $conn) {
      <section class="hero">
           <h1>Pure Beauty, Naturally</h1>
           <p>Discover our certified organic skincare products, crafted with love and the purest ingredients nature has to offer.</p>
-          <a href="product.php" class="btn">Shop Now</a> </section>
+          <a href="#products-section" class="btn">Shop Now</a>
+     </section>
 
      <section class="features">
           <div class="feature-card">
@@ -153,7 +154,7 @@ function isProductInWishlist($item_id, $conn) {
           </div>
      </section>
 
-     <section class="products-section">
+     <section id="products-section" class="products-section">
           <div class="title-filter-bar">
                <h2 class="products-title">Our Products</h2>
                <div class="filter-dropdown">
@@ -198,21 +199,33 @@ function isProductInWishlist($item_id, $conn) {
                          $wishlist_link_href = isset($_SESSION['user_id']) ? "add_to_wishlist.php?item_id={$item_id}" : "login.php?redirect=landing.php";
                ?>
                     <div class="product" data-product-id="<?php echo htmlspecialchars($item_id); ?>">
+                         <?php if (isset($_SESSION['user_id'])): ?>
                          <div class="product-actions">
-                              <a href="<?php echo htmlspecialchars($wishlist_link_href); ?>"
+                              <a href="add_to_wishlist.php?item_id=<?php echo htmlspecialchars($item_id); ?>"
                                   class="wishlist-icon <?php echo $isInWishlist ? 'active' : ''; ?>"
-                                  title="<?php echo isset($_SESSION['user_id']) ? ($isInWishlist ? 'Remove from wishlist' : 'Add to wishlist') : 'Login to add to wishlist'; ?>">
+                                  title="<?php echo $isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'; ?>">
                                    <i class="fas fa-heart"></i>
                               </a>
-                              <a href="<?php echo htmlspecialchars($cart_link_href); ?>"
-                                  class="cart-icon" title="<?php echo isset($_SESSION['user_id']) ? 'Add to cart' : 'Login to add to cart'; ?>">
+                              <a href="add_to_cart.php?item_id=<?php echo htmlspecialchars($item_id); ?>&quantity=1"
+                                  class="cart-icon" title="Add to cart">
                                    <i class="fas fa-shopping-basket"></i>
                               </a>
                          </div>
+                         <?php else: ?>
+                         <div class="product-actions">
+                              <a href="login.php?redirect=landing.php" class="wishlist-icon" title="Login to add to wishlist">
+                                   <i class="fas fa-heart"></i>
+                              </a>
+                              <a href="login.php?redirect=landing.php" class="cart-icon" title="Login to add to cart">
+                                   <i class="fas fa-shopping-basket"></i>
+                              </a>
+                         </div>
+                         <?php endif; ?>
                          <img src="<?php echo $image_path; ?>" alt="<?php echo $image_alt; ?>">
                          <div class="product-info">
                               <h3><?php echo htmlspecialchars($product['name']); ?></h3>
-                              <p><?php echo htmlspecialchars(substr($product['description'], 0, 100)) . (strlen($product['description']) > 100 ? '...' : ''); ?></p> <p class="price">$<?php echo htmlspecialchars(number_format((float)$product['price'], 2)); ?></p>
+                              <p><?php echo htmlspecialchars(substr($product['description'], 0, 100)) . (strlen($product['description']) > 100 ? '...' : ''); ?></p>
+                              <p class="price">$<?php echo htmlspecialchars(number_format((float)$product['price'], 2)); ?></p>
                          </div>
                     </div>
                <?php
@@ -230,7 +243,7 @@ function isProductInWishlist($item_id, $conn) {
           </div>
      </section>
 
-     <section class="video-section">
+     <section class="video-section" id="about-section">
     <h2>Our Story</h2>
     <p>Discover the Nescare difference</p>
     <div class="video-container">
@@ -305,7 +318,6 @@ function isProductInWishlist($item_id, $conn) {
                productCards.forEach(card => {
                     card.addEventListener('click', function(event) {
                          // Prevent navigating if a link/button *inside* the card was clicked
-                         // Added check for parentElement.tagName === 'A' for icons
                          if (event.target.closest('.product-actions') || event.target.tagName === 'A' || event.target.tagName === 'BUTTON' || event.target.parentElement.tagName === 'A') {
                               return;
                          }

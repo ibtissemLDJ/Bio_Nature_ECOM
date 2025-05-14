@@ -78,7 +78,7 @@
   </style>
 </head>
 <body>
-<footer>
+<footer id="contact-section">
         <div>
             <h3>Shop</h3>
             <ul>

@@ -271,22 +271,34 @@ try {
 
                 <div class="product-actions">
                     <?php if ($product['stock'] > 0): ?>
-                        <form action="add_to_cart.php" method="post" class="add-to-cart-form">
-                            <input type="hidden" name="item_id" value="<?= $product['item_id'] ?>">
-                            <input type="hidden" name="quantity" id="cart-quantity-input" value="1">
-                            <button type="submit" class="add-to-cart-btn">
-                                <i class="fas fa-shopping-basket"></i> Add to Cart
-                            </button>
-                        </form>
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <form action="add_to_cart.php" method="post" class="add-to-cart-form">
+                                <input type="hidden" name="item_id" value="<?= $product['item_id'] ?>">
+                                <input type="hidden" name="quantity" id="cart-quantity-input" value="1">
+                                <button type="submit" class="add-to-cart-btn">
+                                    <i class="fas fa-shopping-basket"></i> Add to Cart
+                                </button>
+                            </form>
+                        <?php else: ?>
+                            <a href="login.php?redirect=product_detail.php?id=<?= $product['item_id'] ?>" class="add-to-cart-btn">
+                                <i class="fas fa-shopping-basket"></i> Login to Add to Cart
+                            </a>
+                        <?php endif; ?>
                     <?php endif; ?>
 
-                    <form action="toggle_wishlist.php" method="post" class="wishlist-form">
-                        <input type="hidden" name="item_id" value="<?= $product['item_id'] ?>">
-                        <button type="submit" class="wishlist-btn <?= $isInWishlist ? 'active' : '' ?>">
-                            <i class="fas fa-heart"></i>
-                            <?= $isInWishlist ? 'In Wishlist' : 'Add to Wishlist' ?>
-                        </button>
-                    </form>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <form action="toggle_wishlist.php" method="post" class="wishlist-form">
+                            <input type="hidden" name="item_id" value="<?= $product['item_id'] ?>">
+                            <button type="submit" class="wishlist-btn <?= $isInWishlist ? 'active' : '' ?>">
+                                <i class="fas fa-heart"></i>
+                                <?= $isInWishlist ? 'In Wishlist' : 'Add to Wishlist' ?>
+                            </button>
+                        </form>
+                    <?php else: ?>
+                        <a href="login.php?redirect=product_detail.php?id=<?= $product['item_id'] ?>" class="wishlist-btn">
+                            <i class="fas fa-heart"></i> Login to Add to Wishlist
+                        </a>
+                    <?php endif; ?>
                 </div>
 
                  <?php if (!empty($product['ingredients'])): ?>
