@@ -45,7 +45,7 @@ if (isset($_POST['signup'])) {
 
                 // Prepare the INSERT statement
                 // Use correct table name 'users' and column name 'password_hash'
-                $stmt = $conn->prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)");
+                $stmt = $conn->prepare("INSERT INTO users (username, email, password_hash, is_banned, is_active) VALUES (?, ?, ?, 0, 1)");
                 if ($stmt) {
                     // Bind parameters: username (string), email (string), hashed_password (string)
                     $stmt->bind_param("sss", $username, $email, $hashed_password);

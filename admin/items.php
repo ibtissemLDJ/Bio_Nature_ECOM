@@ -67,20 +67,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Handle file upload for update
         $image_url = $_POST['existing_image'];
         
+        // Handle category_id - set to NULL if empty
+        $category_id = !empty($_POST['category_id']) ? $_POST['category_id'] : null;
+        
         // Priority 1: File upload
         if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] === UPLOAD_ERR_OK) {
             $upload_dir = '../images/products/';
-            $file_name = uniqid() . '_' . basename($_FILES['product_image']['name']);
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+            
+            // Validate file type
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            $file_type = $_FILES['product_image']['type'];
+            
+            if (!in_array($file_type, $allowed_types)) {
+                echo json_encode(['status' => 'error', 'message' => 'Invalid file type. Only JPG, PNG, GIF, and WEBP images are allowed.']);
+                exit();
+            }
+            
+            // Generate unique filename
+            $file_extension = pathinfo($_FILES['product_image']['name'], PATHINFO_EXTENSION);
+            $file_name = uniqid() . '_' . time() . '.' . $file_extension;
             $file_path = $upload_dir . $file_name;
             
             if (move_uploaded_file($_FILES['product_image']['tmp_name'], $file_path)) {
-                $image_url = 'images/products/' . $file_name;
                 // Delete old image if exists and it's a local file
                 if (!empty($_POST['existing_image']) && 
                     strpos($_POST['existing_image'], 'http') !== 0 && 
                     file_exists('../' . $_POST['existing_image'])) {
-                    unlink('../' . $_POST['existing_image']);
+                    @unlink('../' . $_POST['existing_image']);
                 }
+                $image_url = 'images/products/' . $file_name;
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Failed to upload image. Please try again.']);
+                exit();
             }
         }
         // Priority 2: URL or path if no file uploaded
@@ -94,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!empty($_POST['existing_image']) && 
                     strpos($_POST['existing_image'], 'http') !== 0 && 
                     file_exists('../' . $_POST['existing_image'])) {
-                    unlink('../' . $_POST['existing_image']);
+                    @unlink('../' . $_POST['existing_image']);
                 }
             } 
             // If it's a relative path
@@ -110,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (!empty($_POST['existing_image']) && 
                         strpos($_POST['existing_image'], 'http') !== 0 && 
                         file_exists('../' . $_POST['existing_image'])) {
-                        unlink('../' . $_POST['existing_image']);
+                        @unlink('../' . $_POST['existing_image']);
                     }
                 }
             }
@@ -123,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['description'],
             $_POST['price'],
             $_POST['stock'],
-            $_POST['category_id'],
+            $category_id,
             $image_url,
             $_POST['ingredients'],
             $_POST['how_to_use'],
@@ -132,11 +153,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($stmt->execute()) {
             $_SESSION['message'] = 'Product updated successfully!';
+            echo json_encode(['status' => 'success', 'message' => 'Product updated successfully!']);
         } else {
             $_SESSION['error'] = 'Error updating product: ' . $stmt->error;
+            echo json_encode(['status' => 'error', 'message' => 'Error updating product: ' . $stmt->error]);
         }
         $stmt->close();
-        header("Location: items.php");
         exit();
     }
 } elseif (isset($_GET['delete'])) {
@@ -173,12 +195,22 @@ $categories = $conn->query("SELECT * FROM categories");
 ?>
 <link rel="stylesheet" href="css/items.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Initialize Bootstrap modals
+    var addItemModal = new bootstrap.Modal(document.getElementById('addItemModal'));
+    var editItemModal = new bootstrap.Modal(document.getElementById('editItemModal'));
+
+    // Add Product button click handler
+    $('[data-target="#addItemModal"]').click(function() {
+        addItemModal.show();
+    });
+
     // Function to open edit modal with product data
     $('.edit-btn').click(function() {
         var itemId = $(this).data('id');
-        $('#editItemModal').modal('show');
+        editItemModal.show();
         
         // Fetch product data via AJAX
         $.ajax({
@@ -211,13 +243,48 @@ $(document).ready(function() {
                         $('#editItemModal .image-preview').html('');
                     }
                 } else {
-                    alert('Error loading product data');
+                    alert('Error loading product data: ' + response.message);
                 }
             },
-            error: function() {
-                alert('Error communicating with server');
+            error: function(xhr, status, error) {
+                alert('Error communicating with server: ' + error);
             }
         });
+    });
+
+    // Handle edit form submission
+    $('#editItemModal form').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Add the update_item parameter to indicate this is an update
+        var formData = new FormData(this);
+        formData.append('update_item', '1');
+        
+        $.ajax({
+            url: 'items.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                // Check if the response contains an error message
+                if(response.includes('Error')) {
+                    alert('Error updating product: ' + response);
+                } else {
+                    // Reload the page to show updated data
+                    window.location.reload();
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error updating product: ' + error);
+            }
+        });
+    });
+
+    // Close modal buttons
+    $('.close, [data-dismiss="modal"]').click(function() {
+        addItemModal.hide();
+        editItemModal.hide();
     });
 });
 </script>

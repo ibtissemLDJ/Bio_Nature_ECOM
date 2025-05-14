@@ -199,9 +199,19 @@ if (isset($_GET['view'])) {
         <div class="customer-modal-footer">
             <button type="button" class="btn btn-secondary customer-modal-close-btn">Close</button>
             <?php if ($customerDetails['is_banned']): ?>
-                <a href="unban_customer.php?id=<?= $customerDetails['user_id'] ?>" class="btn btn-success">Unban Customer</a>
+                <a href="unban_customer.php?id=<?= $customerDetails['user_id'] ?>" class="btn btn-success" onclick="return confirm('Are you sure you want to unban this customer?')">
+                    <i class="bi bi-unlock"></i> Unban Customer
+                </a>
             <?php else: ?>
-                <a href="ban_customer.php?id=<?= $customerDetails['user_id'] ?>" class="btn btn-warning">Ban Customer</a>
+                <?php if ($orders && $orders->num_rows > 0): ?>
+                    <button class="btn btn-warning" disabled title="Cannot ban customer with existing orders">
+                        <i class="bi bi-lock"></i> Ban Customer
+                    </button>
+                <?php else: ?>
+                    <a href="ban_customer.php?id=<?= $customerDetails['user_id'] ?>" class="btn btn-warning" onclick="return confirm('Are you sure you want to ban this customer?')">
+                        Ban Customer
+                    </a>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
     </div>
