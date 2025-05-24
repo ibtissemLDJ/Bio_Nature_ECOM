@@ -263,7 +263,7 @@ if ($conn instanceof mysqli && !$conn->connect_error) {
                         </select>
                     </div>
 
-                    <button type="submit" class="btn place-order-btn" name="place_order">Place Order</button>
+                    <button type="submit" class="btn place-order-btn" name="place_order">Checkout</button>
                 </form>
             </div>                         
             <div class="checkout-order-summary">

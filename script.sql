@@ -1,4 +1,4 @@
-
+-- first verion i worked with 
 SET default_storage_engine = InnoDB;
 
 CREATE TABLE IF NOT EXISTS categories (
